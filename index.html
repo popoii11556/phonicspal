@@ -1,0 +1,1238 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#6A4DF5"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icons/icon-192.png"><link rel="apple-touch-icon" href="icons/apple-touch-icon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="PhonicsPal"><style>[hidden]{display:none!important}body{margin:0}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style></head><body><title>PhonicsPal Practice</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Mali:wght@400;600&display=swap">
+<style>
+/* Layout: one centred playground column (max 620px); chunky ink-outlined cartoon cards on a dotted sky ground. Single committed light look. */
+:root{
+  --sky:#BDE6FF; --sky-2:#A9DCFF; --ink:#2B2140; --muted:#5B4E7A; --paper:#FFFFFF; --cream:#FFF6DA;
+  --sun:#FFD23F; --coral:#FF7A6B; --grape:#6A4DF5; --grape-soft:#E6E0FF; --grass:#2E9E5B; --grass-soft:#DCFCE7;
+  --bad:#B4411F; --bad-soft:#FFE4DF; --lock:#D8D2EA; --vowel:#FFD9D4;
+  --f-display:'Baloo 2','Mali',system-ui,sans-serif; --f-thai:'Mali','Baloo 2',system-ui,sans-serif;
+  --f-pic:'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif;
+  --r:22px; --line:3px solid var(--ink); --lift:0 5px 0 var(--ink);
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+body{background:var(--sky);color:var(--ink);font-family:var(--f-display);font-size:17px;line-height:1.4;background-image:radial-gradient(var(--sky-2) 2px,transparent 2.6px);background-size:24px 24px}
+.wrap{max-width:620px;margin:0 auto;padding-block:18px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:16px}
+button,a,input,select{font-family:inherit;color:inherit}
+button{cursor:pointer}
+button:focus-visible,a:focus-visible,select:focus-visible{outline:3px solid var(--grape);outline-offset:3px}
+.th{font-family:var(--f-thai);font-weight:400}
+.pic{font-family:var(--f-pic);line-height:1}
+.card{background:var(--paper);border:var(--line);border-radius:var(--r);box-shadow:var(--lift);padding:18px}
+.stack{display:flex;flex-direction:column;gap:14px}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.grow{flex:1 1 0;min-width:0}
+.center{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
+.note{font-size:14px;color:var(--muted);margin:0}
+.btn{min-height:52px;border:var(--line);border-radius:18px;background:var(--paper);box-shadow:0 4px 0 var(--ink);font-size:19px;font-weight:700;padding:0 18px;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.btn[disabled]{opacity:.45;cursor:not-allowed;transform:none}
+.btn-main{background:var(--coral);font-size:21px;font-weight:800;min-height:60px}
+.btn-grape{background:var(--grape);color:#fff}
+.btn-sun{background:var(--sun)}
+/* header */
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.who{display:flex;align-items:center;gap:8px;background:var(--paper);border:var(--line);border-radius:20px;padding:4px 14px 4px 4px;box-shadow:0 4px 0 var(--ink)}
+.who b{font-size:18px;line-height:1}.who small{display:block;font-size:13px;color:var(--muted);font-weight:600}
+.tabs{display:flex;gap:6px}
+.tab{min-height:44px;border:var(--line);border-radius:14px;background:var(--paper);font-weight:700;font-size:16px;padding:0 14px}
+.tab[aria-current="page"]{background:var(--sun)}
+/* home */
+.stagebar{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.stagebar b{font-size:15px;letter-spacing:.06em}
+.lvtitle{margin:0;font-size:32px;line-height:1.05;font-weight:800;text-wrap:balance}
+.gchips{display:flex;gap:8px;flex-wrap:wrap}
+.gchip{border:var(--line);border-radius:16px;background:var(--cream);padding:6px 10px;display:flex;align-items:center;gap:8px;min-height:56px}
+.gchip .pic{font-size:26px}.gchip b{font-size:26px;line-height:1}.gchip span.th{font-size:14px;color:var(--muted)}
+.meter{height:12px;border-radius:6px;background:var(--grape-soft);overflow:hidden;border:2px solid var(--ink)}
+.meter i{display:block;height:100%;background:var(--grape)}
+.path{display:flex;flex-direction:column;gap:12px}
+.pstage{display:flex;flex-direction:column;gap:6px}
+.pstage h3{margin:0;font-size:16px}
+.plevels{display:flex;gap:6px;flex-wrap:wrap}
+.pl{min-width:52px;min-height:44px;border:var(--line);border-radius:14px;background:var(--paper);font-weight:800;font-size:15px;padding:0 10px}
+.pl.passed{background:var(--grass-soft)}.pl.cur{background:var(--sun);box-shadow:0 3px 0 var(--ink)}.pl.locked{background:var(--lock);color:var(--muted)}
+.pl.exam{border-style:dashed}.pl.exam.passed{border-style:solid}
+/* task */
+.taskhead{display:flex;align-items:center;gap:10px}.taskhead .meter{flex:1}
+.chip{font-size:13px;font-weight:800;letter-spacing:.06em;border-radius:10px;padding:2px 10px;border:2px solid var(--ink);display:inline-block}
+.chip.listen{background:#D9F1FF}.chip.read{background:var(--grape-soft)}.chip.spell{background:#FFE29A}.chip.speak{background:var(--vowel)}
+.chip.test{background:var(--ink);color:#fff}.chip.new{background:var(--sun)}
+.prompt{font-size:24px;font-weight:800;margin:0;line-height:1.2}
+.big{font-size:84px;font-weight:800;line-height:1;text-align:center;letter-spacing:2px;margin:4px 0;word-break:break-word}
+.bigpic{font-size:84px;text-align:center}
+.cap{font-size:34px;font-weight:800;text-align:center;line-height:1.25}
+.chunks{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+.chunk{border:var(--line);border-radius:16px;padding:4px 12px 2px;background:var(--cream);display:flex;flex-direction:column;align-items:center;min-width:60px}
+.chunk b{font-size:48px;line-height:1}.chunk .th{font-size:15px;min-height:20px}
+.chunk.v{background:var(--vowel)}.chunk.on{background:var(--sun);box-shadow:0 3px 0 var(--ink)}.chunk.silent{opacity:.45;border-style:dashed}
+.play{width:88px;height:88px;border-radius:50%;border:var(--line);background:var(--grape);box-shadow:var(--lift);display:flex;align-items:center;justify-content:center}
+.play.small{width:56px;height:56px}.play[disabled]{opacity:.4}
+.opts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.opts.four{grid-template-columns:repeat(2,minmax(0,1fr))}
+.opt{min-height:76px;border:var(--line);border-radius:18px;background:var(--paper);font-size:26px;font-weight:800;padding:6px;word-break:break-word;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.opt .pic{font-size:44px}.opt .th{font-size:16px;font-weight:600}
+.opt.sel{background:var(--grape-soft)}
+.opt.right{background:var(--grass-soft);border-color:var(--grass)}.opt.wrong{background:var(--bad-soft);border-color:var(--bad)}
+.slots{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+.slot{width:58px;height:72px;border:3px dashed var(--ink);border-radius:14px;background:var(--paper);font-size:42px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.slot.filled{border-style:solid;background:var(--grape-soft)}.slot.fixed{border-style:solid;background:var(--cream)}
+.slot.right{background:var(--grass-soft);border-color:var(--grass)}.slot.wrong{background:var(--bad-soft);border-color:var(--bad)}
+.tiles{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+.tile{min-width:58px;height:62px;border:var(--line);border-radius:14px;background:var(--cream);box-shadow:0 4px 0 var(--ink);font-size:30px;font-weight:800;padding:0 8px}
+.tile[disabled]{opacity:.3;box-shadow:none}
+.fb{border-radius:18px;padding:12px 14px;border:3px solid;display:flex;flex-direction:column;gap:2px}
+.fb.ok{background:var(--grass-soft);border-color:var(--grass)}.fb.no{background:var(--bad-soft);border-color:var(--bad)}
+.fb b{font-size:19px}
+.mic{width:104px;height:104px;border-radius:50%;border:var(--line);background:var(--coral);box-shadow:var(--lift);display:flex;align-items:center;justify-content:center}
+.mic.on{background:var(--sun);animation:pulse 1s infinite}
+@keyframes pulse{50%{transform:scale(1.06)}}
+@media (prefers-reduced-motion:reduce){.mic.on{animation:none}}
+.hint{background:var(--cream);border:2px dashed var(--ink);border-radius:14px;padding:8px 12px;font-size:15px}
+/* results + progress */
+.sgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;width:100%}
+.sbox{border:var(--line);border-radius:16px;padding:8px 4px;text-align:center}
+.sbox b{display:block;font-size:24px;font-variant-numeric:tabular-nums}.sbox small{font-weight:700;font-size:13px}
+.sbox.pass{background:var(--grass-soft)}.sbox.fail{background:var(--bad-soft)}
+.skillrow{display:grid;grid-template-columns:86px 1fr 46px;gap:10px;align-items:center;font-weight:700}
+.skillrow span:last-child{text-align:right;font-variant-numeric:tabular-nums}
+.weak{display:flex;flex-wrap:wrap;gap:6px}
+.weak span{border:2px solid var(--ink);border-radius:10px;padding:2px 10px;background:var(--bad-soft);font-weight:700}
+.tablebox{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:15px}
+td,th{text-align:left;padding:6px 6px;border-bottom:2px dashed var(--grape-soft);white-space:nowrap}
+select{min-height:44px;border:var(--line);border-radius:12px;font-size:16px;padding:0 10px;background:var(--paper)}
+.toast{border:var(--line);border-radius:16px;background:var(--cream);padding:10px 14px;font-size:15px}
+/* quiet mode */
+.qseg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.qseg button{min-height:52px;border:var(--line);border-radius:14px;background:var(--paper);font-weight:700;font-size:15px;line-height:1.15;padding:4px 6px}
+.qseg button[aria-pressed="true"]{background:var(--ink);color:#fff}
+/* practice zone */
+.ptools{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.ptool{border:var(--line);border-radius:18px;background:var(--paper);min-height:112px;padding:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-align:center}
+.ptool b{font-size:19px}.ptool .th{font-size:13px;color:var(--muted)}.ptool .pic{font-size:30px}
+.ptool[aria-pressed="true"]{background:var(--sun);box-shadow:0 4px 0 var(--ink)}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{min-height:44px;border:var(--line);border-radius:14px;background:var(--paper);font-weight:700;font-size:16px;padding:0 14px}
+.seg button[aria-pressed="true"]{background:var(--grape);color:#fff}
+.pick{display:flex;flex-direction:column;gap:6px}
+.pick > span{font-weight:800;font-size:14px;letter-spacing:.06em;color:var(--muted)}
+.pickrow{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px}
+.pickrow button{flex:0 0 auto;min-width:50px;min-height:48px;border:var(--line);border-radius:14px;background:var(--cream);font-size:22px;font-weight:800;padding:0 10px}
+.pickrow.v button{background:var(--vowel)}
+.pickrow button[aria-pressed="true"]{background:var(--sun);box-shadow:0 3px 0 var(--ink)}
+.fam{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px}
+.fam button{min-height:70px;border:var(--line);border-radius:14px;background:var(--paper);font-size:24px;font-weight:800;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;padding:4px}
+.fam button.known{background:var(--grass-soft)}
+.fam button small{font-family:var(--f-thai);font-weight:400;font-size:13px}
+.typein{min-height:60px;border:var(--line);border-radius:16px;padding:0 14px;font-size:32px;font-weight:800;text-align:center;letter-spacing:4px;background:var(--paper);width:100%}
+.statline{display:flex;gap:14px;flex-wrap:wrap;font-weight:700;font-variant-numeric:tabular-nums}
+@media (max-width:440px){.ptools{grid-template-columns:repeat(3,minmax(0,1fr))}.ptool b{font-size:16px}}
+@media (max-width:440px){.big{font-size:64px}.opt{font-size:21px}.opt .pic{font-size:36px}.lvtitle{font-size:27px}.cap{font-size:27px}.sgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="who">
+      <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="21" r="17" fill="#6A4DF5" stroke="#2B2140" stroke-width="2.5"/><circle cx="14" cy="18" r="5" fill="#fff"/><circle cx="26" cy="18" r="5" fill="#fff"/><circle cx="15" cy="19" r="2.5" fill="#2B2140"/><circle cx="27" cy="19" r="2.5" fill="#2B2140"/><path d="M15 27q5 4 10 0" stroke="#2B2140" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+      <div><b>PhonicsPal</b><small id="hdrLevel">Level 1</small></div>
+    </div>
+    <nav class="tabs" aria-label="Main">
+      <button class="tab" id="tabHome" aria-current="page">Learn</button>
+      <button class="tab" id="tabPrac">Practice</button>
+      <button class="tab" id="tabProg">Progress</button>
+    </nav>
+  </header>
+  <section id="quietBar" class="card stack" style="padding:12px 14px;gap:8px" aria-label="Where are you playing"></section>
+  <div id="noVoice" class="toast th" hidden>เบราว์เซอร์นี้ไม่มีเสียงอ่านภาษาอังกฤษ กรุณาเปิดด้วย Chrome หรือ Edge บนคอมพิวเตอร์</div>
+
+  <main id="vHome" class="stack">
+    <section class="card stack">
+      <div class="stagebar"><b id="hStage">STAGE 1 OF 4</b><span class="note" id="hPhase">Phase 2</span></div>
+      <h1 class="lvtitle" id="hTitle">Level 1 · s a t p</h1>
+      <div class="gchips" id="hChips"></div>
+      <div class="stack" style="gap:4px">
+        <div class="meter" aria-label="Ready for the level test"><i id="hMeter" style="width:0%"></i></div>
+        <span class="note" id="hReady">Ready for the level test: 0%</span>
+      </div>
+    </section>
+    <div class="row">
+      <button class="btn btn-main grow" id="btnLesson">Start lesson</button>
+      <button class="btn btn-sun grow" id="btnTest" disabled>Level test</button>
+    </div>
+    <p class="note th" id="hTestNote">ฝึกจนแถบเต็ม แล้วสอบท้ายด่าน ต้องผ่านทุกทักษะ (ฟัง อ่าน สะกด พูด) จึงไปด่านต่อไปได้</p>
+    <section class="card stack">
+      <div class="stagebar"><b style="font-size:20px;letter-spacing:0">Your path</b><span class="note">Everyone starts at Level 1</span></div>
+      <div class="path" id="hPath"></div>
+    </section>
+  </main>
+
+  <main id="vTask" class="stack" hidden>
+    <div class="taskhead">
+      <button class="btn" id="btnQuit" aria-label="Back to the path" style="min-height:44px;width:48px;padding:0">✕</button>
+      <div class="meter"><i id="tMeter" style="width:0%"></i></div>
+      <span id="tCount" style="font-weight:800;font-variant-numeric:tabular-nums">1/10</span>
+    </div>
+    <section class="card stack" id="tCard"></section>
+    <div id="tFb"></div>
+    <button class="btn btn-main" id="btnNext" hidden>Next</button>
+  </main>
+
+  <main id="vResult" hidden>
+    <section class="card center" id="rCard"></section>
+  </main>
+
+  <main id="vPrac" class="stack" hidden>
+    <section class="card stack">
+      <div class="stagebar"><b style="font-size:22px;letter-spacing:0">Practice zone</b><span class="note th">ฝึกได้ทุกเมื่อ ทุกด่าน ไม่กระทบผลสอบ</span></div>
+      <div class="ptools" role="group" aria-label="Practice tools">
+        <button class="ptool" id="toolBlend" aria-pressed="true"><span class="pic">🧩</span><b>Blend</b><span class="th">ผสมสระ · แจกลูก</span></button>
+        <button class="ptool" id="toolSpell" aria-pressed="false"><span class="pic">✏️</span><b>Spell</b><span class="th">ฟังแล้วสะกด</span></button>
+        <button class="ptool" id="toolRead" aria-pressed="false"><span class="pic">📖</span><b>Read</b><span class="th">ฝึกอ่านคำและประโยค</span></button>
+      </div>
+    </section>
+    <section class="card stack" id="pracPanel"></section>
+  </main>
+
+  <main id="vProg" class="stack" hidden>
+    <section class="card stack">
+      <b style="font-size:20px">Skills</b>
+      <div id="pSkills" class="stack" style="gap:8px"></div>
+      <p class="note th">คิดจากทุกเสียงและทุกคำที่เรียนแล้ว ระบบเลือกทักษะที่อ่อนที่สุดมาฝึกบ่อยขึ้น</p>
+    </section>
+    <section class="card stack">
+      <b style="font-size:20px">Levels</b>
+      <div class="tablebox"><table><thead><tr><th>Level</th><th>Sounds</th><th>Learned</th><th>Mastery</th><th>Test</th></tr></thead><tbody id="pLevels"></tbody></table></div>
+    </section>
+    <section class="card stack">
+      <b style="font-size:20px">Test history</b>
+      <div class="tablebox"><table><thead><tr><th>Date</th><th>Test</th><th>Listen</th><th>Read</th><th>Spell</th><th>Speak</th><th>Total</th></tr></thead><tbody id="pTests"></tbody></table></div>
+    </section>
+    <section class="card stack">
+      <b style="font-size:20px">Needs practice</b>
+      <div class="weak" id="pWeak"></div>
+    </section>
+    <section class="card stack">
+      <b style="font-size:20px">Settings</b>
+      <label for="selAccent" style="font-weight:700">Voice accent</label>
+      <select id="selAccent"><option value="en-GB">British (en-GB)</option><option value="en-US">American (en-US)</option></select>
+      <p class="note th" id="pAudio"></p>
+      <div class="row" id="resetRow"></div>
+      <p class="note th">ความคืบหน้าเก็บไว้ในเบราว์เซอร์เครื่องนี้เท่านั้น</p>
+    </section>
+  </main>
+</div>
+
+<script>/* PhonicsPal curriculum
+   Stage 1 (Levels 1-5): DfE Letters and Sounds Phase 2, weekly planning sets. Real words, alien
+     (nonsense) words, captions and tricky words are copied from the published planning.
+   Stages 2-4 (Levels 6-13): graphemes in Letters and Sounds order (Phases 3-5); practice words
+     from the Cambridge English Pre A1 Starters wordlist.
+   Grapheme row: [grapheme, keyword, picture, Thai sound hint, how to say it (Thai), where the sound is in the keyword: s/m/e]
+   Thai meanings are plain glosses for beginners; a teacher should review them. */
+var CURRICULUM = {
+  stages: [
+    { id: 1, name: "Sounds & blending", phase: "Phase 2", levels: [1, 2, 3, 4, 5] },
+    { id: 2, name: "Two letters, one sound", phase: "Phase 3", levels: [6, 7, 8] },
+    { id: 3, name: "Consonant blends", phase: "Phase 4", levels: [9, 10, 11] },
+    { id: 4, name: "Long vowels & magic e", phase: "Phase 5", levels: [12, 13] }
+  ],
+  levels: [
+    { id: 1, stage: 1, title: "s a t p",
+      g: [["s","sun","☀️","ซ","ให้ลมผ่านไรฟัน ไม่เติมสระ","s"],["a","apple","🍎","แอะ","อ้าปากกว้าง สั้น ๆ","s"],
+          ["t","tiger","🐯","ท","ลิ้นแตะหลังฟันบน ปล่อยลมสั้น ๆ","s"],["p","pig","🐷","พ","ปิดปากแล้วปล่อยลม","s"]],
+      words: "at sat pat tap", alien: "tas", captions: [], tricky: "" },
+    { id: 2, stage: 1, title: "i n m d",
+      g: [["i","insect","🐞","อิ","ยิ้มเล็กน้อย สั้น ๆ","s"],["n","nose","👃","น","ลิ้นแตะเหงือกบน ฮัมทางจมูก","s"],
+          ["m","mouse","🐭","ม","ปิดปาก ฮัมทางจมูก","s"],["d","dog","🐶","ด","คล้าย t แต่มีเสียงก้องในคอ","s"]],
+      words: "it is sit tip pip sip an in nip pan pin tin tan nap am man mat map sad dad did dip",
+      alien: "si ti dap nim pid tid", captions: [], tricky: "is it in at" },
+    { id: 3, stage: 1, title: "g o c k",
+      g: [["g","goat","🐐","ก","ก้องในคอ (ไทยไม่มีเสียงนี้ตรง ๆ)","s"],["o","orange","🍊","เอาะ","ห่อปากกลม สั้น ๆ","s"],
+          ["c","cat","🐱","ค","ยกโคนลิ้นแล้วปล่อยลม","s"],["k","kid","🧒","ค","เสียงเดียวกับ c","s"]],
+      words: "dog pot got not pig gap pop dig cat can man map mop cap kid kit top",
+      alien: "pog gop sog gom",
+      captions: [["A pig is sad.","🐷😢"],["Pat a dog.","🖐️🐶"],["A pin in a map.","📌🗺️"],["A cat and a dog.","🐱🐶"],["A pig in a cap.","🐷🧢"]],
+      tricky: "and" },
+    { id: 4, stage: 1, title: "ck e u r",
+      g: [["ck","duck","🦆","ค","c กับ k คู่กันท้ายคำ เป็นเสียงเดียว","e"],["e","egg","🥚","เอะ","อ้าปากกลาง ๆ สั้น ๆ","s"],
+          ["u","umbrella","☂️","อะ","ปากผ่อนคลาย สั้น ๆ","s"],["r","robot","🤖","ร","ห่อปากเล็กน้อย ไม่รัวลิ้น","s"]],
+      words: "sock pick pack sick tick sun mug cup get pet pen men neck peg rip ram rat rag rot",
+      alien: "dack gick gack mun sug",
+      captions: [["A dog is sick.","🐶🤒"],["Get a pen.","🖊️"],["A cat is a pet.","🐱🏡"],["The cat got a rat.","🐱🐀"]],
+      tricky: "the to" },
+    { id: 5, stage: 1, title: "h b f ff l ll ss",
+      g: [["h","hat","🎩","ฮ","ปล่อยลมเบา ๆ","s"],["b","bed","🛏️","บ","คล้าย p แต่มีเสียงก้อง","s"],
+          ["f","fish","🐟","ฟ","ฟันบนแตะริมฝีปากล่าง เป่าลม","s"],["ff","puff","💨","ฟ","f สองตัวท้ายคำ เสียงเดียว","e"],
+          ["l","leg","🦵","ล","ปลายลิ้นแตะเหงือกบน","s"],["ll","hill","⛰️","ล","l สองตัวท้ายคำ เสียงเดียว","e"],
+          ["ss","kiss","💋","ซ","s สองตัวท้ายคำ เสียงเดียว","e"]],
+      words: "hat hug big bag bed bat run bun but bit hit him hum bug back fan leg fill less hiss fuss kiss mess fat boss hop sell",
+      alien: "hap huck bip bem bup hin niss dess tass goss",
+      captions: [["The cat had a hat.","🐱🎩"],["The dog had a big red bed.","🐶🛏️"],["Hug a pet.","🤗🐶"],["Get off the bus.","🚌"],["No, it is not hot.","🚫🔥"]],
+      tricky: "no go I" },
+    { id: 6, stage: 2, title: "sh ch th x z",
+      g: [["sh","ship","🚢","ช","ห่อปาก เป่าลม ชู่ว","s"],["ch","chicken","🐔","ช","มีเสียงแตกสั้น ๆ","s"],
+          ["th","bath","🛁","ธ","ไม่มีในไทย: วางปลายลิ้นระหว่างฟัน แล้วเป่าลม","e"],["x","box","📦","คซ","สองเสียงติดกัน k + s","e"],
+          ["z","zebra","🦓","ซ","เหมือน s แต่มีเสียงก้อง (ไม่มีในไทย)","s"]],
+      words: "fish ship shell shop chicken bath box", alien: "", captions: [], tricky: "he she we me be" },
+    { id: 7, stage: 2, title: "ee ai oa oo",
+      g: [["ee","bee","🐝","อี","ยิ้ม เสียงยาว","e"],["ai","rain","🌧️","เอ","เสียงยาว เอ-อิ","m"],
+          ["oa","boat","⛵","โอ","ห่อปาก โอ-อุ","m"],["oo","zoo","🦁","อู","ห่อปากยาว","e"]],
+      words: "bee sheep tail boat goat zoo", alien: "", captions: [], tricky: "was my you" },
+    { id: 8, stage: 2, title: "ar air ear",
+      g: [["ar","car","🚗","อา","อ้าปาก เสียงยาว (สำเนียงอังกฤษไม่ม้วนลิ้น)","e"],["air","hair","💇","แอ","เสียงยาว แอ-เออะ","e"],
+          ["ear","ear","👂","เอีย","เอีย-เออะ","s"]],
+      words: "car arm food room hair chair ear", alien: "", captions: [], tricky: "they her all are" },
+    { id: 9, stage: 3, title: "fr dr st nd mp",
+      g: [["fr","frog","🐸","ฟร","ฟ กับ ร ติดกัน ห้ามแทรกสระ","s"],["dr","drink","🥤","ดร","ด กับ ร ติดกัน","s"],
+          ["st","stop","🛑","สต","ไม่ใช่ สะ-ตะ: ส กับ ต ติดกัน","s"],["nd","hand","✋","นด","ต้องได้ยิน d ท้ายคำ","e"],
+          ["mp","lamp","💡","มพ","ปิดปาก ม แล้วปล่อย p","e"]],
+      words: "frog drink dress desk hand lamp", alien: "", captions: [], tricky: "said have like so" },
+    { id: 10, stage: 3, title: "lk nk sp bl",
+      g: [["lk","milk","🥛","ลค","ล แล้วตามด้วย k","e"],["nk","pink","🌸","งค","ง แล้วปล่อย k","e"],
+          ["sp","spell","🔤","สป","ส กับ ป ติดกัน","s"],["bl","black","⚫","บล","บ กับ ล ติดกัน","s"]],
+      words: "milk pink sand spell stand black", alien: "", captions: [], tricky: "do some come" },
+    { id: 11, stage: 3, title: "tr gr sl cl str",
+      g: [["tr","tree","🌳","ทร","ท กับ ร ติดกัน","s"],["gr","green","🟢","กร","ก กับ ร ติดกัน","s"],
+          ["sl","sleep","😴","สล","ส กับ ล ติดกัน","s"],["cl","clock","⏰","คล","ค กับ ล ติดกัน","s"],
+          ["str","street","🛣️","สตร","สามเสียงติดกัน ห้ามแทรกสระ","s"]],
+      words: "tree train truck green sleep clock street", alien: "", captions: [], tricky: "were there little one" },
+    { id: 12, stage: 4, title: "a-e i-e",
+      g: [["a_e","cake","🎂","เอ","e ท้ายคำไม่ออกเสียง แต่ทำให้ a อ่านว่า เอ","m"],["i_e","bike","🚲","ไอ","e ท้ายคำทำให้ i อ่านว่า ไอ","m"]],
+      words: "cake snake plane grape bike kite", alien: "", captions: [], tricky: "when out what" },
+    { id: 13, stage: 4, title: "o-e ir wh",
+      g: [["o_e","nose","👃","โอ","e ท้ายคำทำให้ o อ่านว่า โอ","m"],["ir","bird","🐦","เออ","เสียงยาว เออ","m"],
+          ["wh","white","⚪","ว","อ่านเหมือน w","s"]],
+      words: "nose home smile white bird girl shirt skirt", alien: "", captions: [], tricky: "oh their people" }
+  ],
+  meaning: {
+    at:["ที่",""],sat:["นั่ง (อดีต)",""],pat:["ตบเบา ๆ","🖐️"],tap:["ก๊อกน้ำ / เคาะ","🚰"],
+    it:["มัน",""],is:["เป็น / อยู่",""],sit:["นั่ง",""],tip:["ปลาย",""],pip:["เมล็ดผลไม้",""],sip:["จิบ",""],
+    an:["หนึ่ง (นำหน้าคำนาม)",""],in:["ใน",""],nip:["หนีบ",""],pan:["กระทะ","🍳"],pin:["เข็มหมุด","📌"],tin:["กระป๋อง","🥫"],
+    tan:["ผิวคล้ำแดด",""],nap:["งีบหลับ","😴"],am:["เป็น (ใช้กับ I)",""],man:["ผู้ชาย","👨"],mat:["เสื่อ",""],map:["แผนที่","🗺️"],
+    sad:["เศร้า","😢"],dad:["พ่อ","👨"],did:["ทำ (อดีต)",""],dip:["จุ่ม",""],
+    dog:["สุนัข","🐶"],pot:["หม้อ","🍲"],got:["ได้ (อดีต)",""],not:["ไม่",""],pig:["หมู","🐷"],gap:["ช่องว่าง",""],
+    pop:["แตกดังป๊อป","🎈"],dig:["ขุด","⛏️"],cat:["แมว","🐱"],can:["สามารถ / กระป๋อง",""],mop:["ไม้ถูพื้น",""],cap:["หมวกแก๊ป","🧢"],
+    kid:["เด็ก","🧒"],kit:["ชุดอุปกรณ์",""],top:["ด้านบน",""],
+    sock:["ถุงเท้า","🧦"],pick:["หยิบ / เลือก",""],pack:["จัดของใส่กระเป๋า",""],sick:["ป่วย","🤒"],tick:["เครื่องหมายถูก","✔️"],
+    sun:["ดวงอาทิตย์","☀️"],mug:["แก้วมัค","☕"],cup:["ถ้วย","☕"],get:["ได้รับ / เอา",""],pet:["สัตว์เลี้ยง","🐕"],pen:["ปากกา","🖊️"],
+    men:["ผู้ชาย (หลายคน)",""],neck:["คอ",""],peg:["ไม้หนีบผ้า",""],rip:["ฉีก",""],ram:["แกะตัวผู้","🐏"],rat:["หนู","🐀"],
+    rag:["ผ้าขี้ริ้ว",""],rot:["เน่า",""],
+    hat:["หมวก","🎩"],hug:["กอด","🤗"],big:["ใหญ่",""],bag:["กระเป๋า","👜"],bed:["เตียง","🛏️"],bat:["ไม้ตี / ค้างคาว",""],
+    run:["วิ่ง","🏃"],bun:["ขนมปังก้อน",""],but:["แต่",""],bit:["นิดหน่อย",""],hit:["ตี",""],him:["เขา (ผู้ชาย)",""],
+    hum:["ฮัมเพลง",""],bug:["แมลง","🐛"],back:["หลัง / กลับ",""],fan:["พัดลม",""],leg:["ขา","🦵"],fill:["เติมให้เต็ม",""],
+    less:["น้อยกว่า",""],hiss:["ขู่ฟ่อ","🐍"],fuss:["วุ่นวาย",""],kiss:["จูบ","💋"],mess:["รก",""],fat:["อ้วน",""],
+    boss:["เจ้านาย",""],hop:["กระโดดขาเดียว",""],sell:["ขาย",""],
+    fish:["ปลา","🐟"],ship:["เรือลำใหญ่","🚢"],shell:["เปลือกหอย","🐚"],bath:["อ่างอาบน้ำ","🛁"],chair:["เก้าอี้",""],box:["กล่อง","📦"],shop:["ร้านค้า","🏪"],chicken:["ไก่","🐔"],
+    bee:["ผึ้ง","🐝"],sheep:["แกะ","🐑"],tail:["หาง",""],boat:["เรือลำเล็ก","⛵"],goat:["แพะ","🐐"],zoo:["สวนสัตว์","🦁"],
+    car:["รถยนต์","🚗"],arm:["แขน","💪"],food:["อาหาร","🍱"],room:["ห้อง",""],hair:["ผม","💇"],ear:["หู","👂"],
+    frog:["กบ","🐸"],drink:["ดื่ม","🥤"],dress:["ชุดกระโปรง","👗"],desk:["โต๊ะเรียน",""],hand:["มือ","✋"],lamp:["โคมไฟ","💡"],
+    milk:["นม","🥛"],pink:["สีชมพู","🌸"],sand:["ทราย","🏖️"],spell:["สะกด","🔤"],stand:["ยืน",""],black:["สีดำ","⚫"],
+    tree:["ต้นไม้","🌳"],train:["รถไฟ","🚆"],truck:["รถบรรทุก","🚚"],green:["สีเขียว","🟢"],sleep:["นอนหลับ","😴"],clock:["นาฬิกา","⏰"],street:["ถนน","🛣️"],
+    cake:["เค้ก","🎂"],snake:["งู","🐍"],plane:["เครื่องบิน","✈️"],grape:["องุ่น","🍇"],bike:["จักรยาน","🚲"],kite:["ว่าว",""],
+    nose:["จมูก","👃"],home:["บ้าน","🏠"],smile:["ยิ้ม","😊"],white:["สีขาว","⚪"],bird:["นก","🐦"],girl:["เด็กผู้หญิง","👧"],
+    shirt:["เสื้อเชิ้ต","👕"],skirt:["กระโปรง",""]
+  }
+};
+</script>
+<script>
+(function(){
+"use strict";
+/* ================= data ================= */
+const C = CURRICULUM;
+const LV = {}, GR = {}, STG = {};
+C.stages.forEach(s => STG[s.id] = s);
+C.levels.forEach(l => {
+  LV[l.id] = l;
+  l.gs = l.g.map(r => ({g:r[0], key:r[1], pic:r[2], th:r[3], how:r[4], pos:r[5], lv:l.id}));
+  l.gs.forEach(x => { if(!GR[x.g]) GR[x.g] = x; });
+  l.wordList = l.words.split(/\s+/).filter(Boolean);
+  l.alienList = (l.alien||"").split(/\s+/).filter(Boolean);
+  l.trickyList = (l.tricky||"").split(/\s+/).filter(Boolean);
+  l.caps = (l.captions||[]).map((c,i) => ({id:l.id+"-"+i, t:c[0], pic:c[1]}));
+});
+const CAP = {}; C.levels.forEach(l => l.caps.forEach(c => CAP[c.id] = c));
+const LAST = C.levels[C.levels.length-1].id;
+const SKILLS = ["listen","read","spell","speak"];
+const SK_TH = {listen:"ฟัง", read:"อ่าน", spell:"สะกด", speak:"พูด"};
+const KIND_SKILLS = {g:["listen","read","spell","speak"], w:["listen","read","spell","speak"], c:["listen","read","speak"], t:["listen","read"]};
+const POS_TH = {s:"เสียงต้นคำ", m:"เสียงกลางคำ", e:"เสียงท้ายคำ"};
+const VOWELS = "aeiou";
+function showG(g){ return g.replace("_","-"); }
+function meanTh(w){ return (C.meaning[w]||["",""])[0]; }
+function meanPic(w){ return (C.meaning[w]||["",""])[1]; }
+
+/* items: g:<grapheme> w:<word> c:<caption id> t:<tricky word> */
+function levelItems(id){
+  const l = LV[id], out = [];
+  l.gs.forEach(x => out.push("g:"+x.g));
+  l.wordList.forEach(w => out.push("w:"+w));
+  l.trickyList.forEach(w => out.push("t:"+w));
+  l.caps.forEach(c => out.push("c:"+c.id));
+  return out;
+}
+const kindOf = it => it.slice(0,1), idOf = it => it.slice(2);
+function graphemesUpTo(lv){ const out=[]; C.levels.forEach(l => { if(l.id<=lv) l.gs.forEach(x => out.push(x.g)); }); return out; }
+function itemLevel(it){ for(const l of C.levels){ if(levelItems(l.id).indexOf(it)>=0) return l.id; } return 1; }
+function label(it){ const k=kindOf(it), id=idOf(it); return k==="g" ? "/"+showG(id)+"/" : k==="c" ? CAP[id].t : id; }
+
+/* split a word into the graphemes taught by level lv */
+function chunks(word, lv){
+  const known = graphemesUpTo(lv).map(g => g.replace("_e","")).sort((a,b) => b.length-a.length);
+  const magic = lv>=12 && /[aeiou][^aeiou]e$/.test(word) && word.length>=4;
+  const base = magic ? word.slice(0,-1) : word, out = [];
+  let i = 0;
+  while(i < base.length){
+    let g = known.find(x => base.startsWith(x, i)) || base[i];
+    let gr = g;
+    if(magic && i === base.length-2 && g.length===1 && VOWELS.indexOf(g)>=0) gr = g+"_e";
+    out.push({t:g, g:gr, v: VOWELS.indexOf(g[0])>=0 || ["ee","ai","oa","oo","ar","air","ear","ir"].indexOf(g)>=0});
+    i += g.length;
+  }
+  if(magic) out.push({t:"e", g:out[out.length-2].g, silent:true});
+  return out;
+}
+
+/* ================= saved progress ================= */
+const KEY = "phonicspal-v2";
+function fresh(){ return {m:{}, intro:{}, unlocked:1, cur:1, passed:{}, exams:{}, lock:{}, history:[], lessons:0, tasks:0, recent:[], accent:"en-GB", quiet:"off", practice:{spell:{n:0,ok:0,best:0}, read:{n:0,ok:0}, blend:{n:0}}}; }
+let P = fresh();
+try { const raw = localStorage.getItem(KEY); if(raw) P = Object.assign(fresh(), JSON.parse(raw)); } catch(e){}
+if(!P.practice || !P.practice.spell) P.practice = fresh().practice;
+if(!P.quiet) P.quiet = "off";
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(P)); } catch(e){} }
+const mk = (it,s) => it+"|"+s;
+const mget = (it,s) => P.m[mk(it,s)] || 0;
+function learn(it, s, ok, w){ const m = mget(it,s); w = w||1; P.m[mk(it,s)] = Math.max(0, Math.min(1, ok ? m + 0.34*w*(1-m) : m*0.55)); }
+function avg(a){ return a.length ? a.reduce((x,y)=>x+y,0)/a.length : 0; }
+
+/* ================= audio ================= */
+const synth = window.speechSynthesis || null; let voices = [];
+function loadVoices(){ if(synth) voices = synth.getVoices() || []; }
+if(synth){ loadVoices(); synth.onvoiceschanged = loadVoices; } else $("noVoice").hidden = false;
+function pickVoice(){
+  const list = voices.filter(v => v.lang && v.lang.replace("_","-").indexOf(P.accent)===0);
+  return list.find(v => /Google|Natural|Neural|Online/i.test(v.name)) || list[0] || voices.find(v => /^en/i.test(v.lang)) || null;
+}
+function say(text, rate){
+  if(P.quiet === "silent") return;
+  if(window.PPCloud && window.PPCloud.ready){ window.PPCloud.say(text, P.accent, rate).catch(() => webSay(text, rate)); return; }
+  webSay(text, rate);
+}
+function webSay(text, rate){
+  if(!synth) return;
+  try { synth.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = P.accent; u.rate = rate || 0.85; const v = pickVoice(); if(v) u.voice = v; synth.speak(u); } catch(e){}
+}
+/* Pure sounds come from teacher recordings in audio/phonemes/<grapheme>.mp3 next to this page.
+   Without a recording, the app says the keyword (sun for s) and tells the learner which part to listen to. */
+const phonemeOK = {}; let anyPhoneme = false;
+function playSound(g){
+  if(P.quiet === "silent") return;
+  const G = GR[g]; let fell = false;
+  const fallback = () => { if(fell) return; fell = true; phonemeOK[g] = false; say(G.key); };
+  if(phonemeOK[g] === false){ say(G.key); return; }
+  try {
+    const a = new Audio("audio/phonemes/" + g + ".mp3");
+    a.onerror = fallback;
+    a.play().then(() => { phonemeOK[g] = true; anyPhoneme = true; }).catch(fallback);
+  } catch(e){ fallback(); }
+}
+function soundNote(g){
+  if(phonemeOK[g] === true) return null;
+  const G = GR[g];
+  return el("p",{class:"note th", text:"ยังไม่มีไฟล์เสียงครู จึงเล่นคำ \""+G.key+"\" ให้ฟัง"+POS_TH[G.pos]+" ("+showG(g)+" = เสียงคล้าย "+G.th+")"});
+}
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition || null;
+let micBlocked = false;
+
+/* ================= helpers ================= */
+function $(id){ return document.getElementById(id); }
+function shuffle(a){ a = a.slice(); for(let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]] = [a[j],a[i]]; } return a; }
+function sample(a, n){ return shuffle(a).slice(0, n); }
+function el(tag, attrs, kids){
+  const e = document.createElement(tag); attrs = attrs || {};
+  for(const k in attrs){ const v = attrs[k]; if(v==null) continue;
+    if(k==="class") e.className = v; else if(k==="text") e.textContent = v; else if(k==="html") e.innerHTML = v;
+    else if(k.slice(0,2)==="on") e.addEventListener(k.slice(2), v); else e.setAttribute(k, v); }
+  (kids||[]).forEach(c => { if(c) e.appendChild(typeof c === "string" ? document.createTextNode(c) : c); });
+  return e;
+}
+const ICON_PLAY = '<svg width="40" height="40" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9z" fill="#fff"/><path d="M16 8a5 5 0 0 1 0 8M18.5 5.5a8.5 8.5 0 0 1 0 13" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/></svg>';
+const ICON_SLOW = '<svg width="30" height="30" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9z" fill="#fff"/><text x="15" y="16" font-size="8" font-weight="700" fill="#fff" font-family="sans-serif">½</text></svg>';
+const ICON_MIC = '<svg width="44" height="44" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="12" rx="3" fill="#2B2140"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3" stroke="#2B2140" stroke-width="2" fill="none" stroke-linecap="round"/></svg>';
+
+/* ================= adaptive engine ================= */
+/* support: 0 = stretch (4 choices, no Thai hints), 1 = normal, 2 = extra help (hints, slow audio first) */
+function support(){
+  if(run && run.mode !== "lesson") return 1;
+  const r = P.recent.slice(-12); if(r.length < 6) return 1;
+  const acc = r.filter(Boolean).length / r.length;
+  return acc >= 0.9 ? 0 : acc < 0.65 ? 2 : 1;
+}
+const hintsOn = () => !!run && run.mode === "lesson" && support() >= 1;
+const nOpts = () => run.mode === "lesson" && support() === 0 ? 4 : 3;
+
+function levelReadiness(id){
+  const its = levelItems(id), intro = its.filter(it => P.intro[it]).length / its.length;
+  const per = SKILLS.map(s => { const v = its.filter(it => KIND_SKILLS[kindOf(it)].indexOf(s)>=0).map(it => mget(it,s)); return v.length ? avg(v) : 1; });
+  return Math.min(1, intro*0.4 + 0.6*Math.min(1, Math.min.apply(null, per)/0.6));
+}
+function ready(id){ const its = levelItems(id); return its.every(it => P.intro[it]) && levelReadiness(id) >= 0.999; }
+
+function introduceFor(id){
+  const l = LV[id], add = [];
+  const gNew = l.gs.map(x => "g:"+x.g).filter(it => !P.intro[it]);
+  if(gNew.length){ return gNew.slice(0,4); }
+  const gAvg = avg(l.gs.map(x => avg(KIND_SKILLS.g.map(s => mget("g:"+x.g, s)))));
+  const wAll = l.wordList.map(w => "w:"+w), wNew = wAll.filter(it => !P.intro[it]);
+  const wIntro = (wAll.length - wNew.length) / Math.max(1, wAll.length);
+  if(gAvg >= 0.35 && wNew.length) add.push.apply(add, wNew.slice(0, support()===0 ? 4 : 3));
+  const tNew = l.trickyList.map(w => "t:"+w).filter(it => !P.intro[it]);
+  if(wIntro >= 0.4 && tNew.length) add.push.apply(add, tNew.slice(0,3));
+  const cNew = l.caps.map(c => "c:"+c.id).filter(it => !P.intro[it]);
+  if(wIntro >= 0.7 && cNew.length) add.push.apply(add, cNew.slice(0,2));
+  if(!add.length && !wNew.length && !tNew.length && !cNew.length) return [];
+  return add;
+}
+/* quiet modes: "earphones" = no speaking out loud; "silent" = no sound at all (no listening tasks either) */
+function skillAllowed(kind, s){
+  if(P.quiet !== "off" && s === "speak") return false;
+  if(P.quiet === "silent" && (s === "listen" || kind === "t")) return false;
+  return true;
+}
+let lastItem = null, lastSkills = [];
+function pickPractice(id){
+  const pool = [];
+  const push = (it, wt) => KIND_SKILLS[kindOf(it)].filter(s => skillAllowed(kindOf(it), s)).forEach(s => { const m = mget(it,s); pool.push({it, s, wt: wt*(Math.pow(1-m,2)+0.05)}); });
+  levelItems(id).filter(it => P.intro[it]).forEach(it => push(it, 1));
+  for(let k=1; k<id; k++) levelItems(k).forEach(it => { if(P.intro[it]) push(it, 0.3); });
+  const ok = pool.filter(p => p.it !== lastItem && !(lastSkills.length>=2 && lastSkills.slice(-2).every(s => s===p.s)));
+  const list = ok.length ? ok : pool;
+  let tot = list.reduce((a,b) => a+b.wt, 0), r = Math.random()*tot;
+  for(const p of list){ r -= p.wt; if(r <= 0) return choose(p); }
+  return choose(list[0]);
+  function choose(p){ lastItem = p.it; lastSkills.push(p.s); return {it:p.it, s:p.s}; }
+}
+
+/* ================= views ================= */
+const VIEWS = ["vHome","vTask","vResult","vProg","vPrac"];
+function show(v){ VIEWS.forEach(x => $(x).hidden = x!==v); $("quietBar").hidden = (v==="vTask" || v==="vResult"); if(!$("quietBar").hidden) renderQuiet(); const tab = v==="vProg" ? "tabProg" : v==="vPrac" ? "tabPrac" : "tabHome"; ["tabHome","tabPrac","tabProg"].forEach(t => $(t).setAttribute("aria-current", t===tab ? "page" : "false")); window.scrollTo(0,0); }
+function stageOf(id){ return STG[LV[id].stage]; }
+function isLastOfStage(id){ const s = stageOf(id); return s.levels[s.levels.length-1] === id; }
+function examUnlocked(sid){ const s = STG[sid]; return !!P.passed[s.levels[s.levels.length-1]]; }
+
+function renderHome(){
+  const l = LV[P.cur], s = stageOf(P.cur);
+  $("hdrLevel").textContent = "Level "+P.cur+" · Stage "+s.id;
+  $("hStage").textContent = "STAGE "+s.id+" OF "+C.stages.length+" · "+s.name.toUpperCase();
+  $("hPhase").textContent = "Letters and Sounds "+s.phase;
+  $("hTitle").textContent = "Level "+l.id+" · "+l.gs.map(x => showG(x.g)).join(" ");
+  const ch = $("hChips"); ch.innerHTML = "";
+  l.gs.forEach(x => ch.appendChild(el("button",{class:"gchip","aria-label":"Hear "+showG(x.g), onclick:() => playSound(x.g)},[el("span",{class:"pic",text:x.pic}), el("b",{text:showG(x.g)}), el("span",{class:"th",text:"≈ "+x.th})])));
+  const r = levelReadiness(P.cur); $("hMeter").style.width = Math.round(r*100)+"%";
+  const done = levelItems(P.cur).filter(it => P.intro[it]).length, all = levelItems(P.cur).length;
+  $("hReady").textContent = "Ready for the level test: "+Math.round(r*100)+"% · learned "+done+" of "+all;
+  const bt = $("btnTest"), note = $("hTestNote");
+  const lastStage = isLastOfStage(P.cur) && P.passed[P.cur];
+  if(lastStage && !P.exams[s.id]){
+    bt.textContent = "Stage "+s.id+" exam"; bt.disabled = !testAllowed("S"+s.id);
+    note.textContent = testAllowed("S"+s.id) ? "สอบเลื่อนระดับ: รวมทุกด่านใน Stage นี้ 24 ข้อ ผ่านแล้วขึ้น Stage ถัดไป" : "สอบไม่ผ่านรอบที่แล้ว ฝึกอีก 1 บทเรียนก่อน แล้วสอบใหม่ได้";
+  } else {
+    bt.textContent = P.passed[P.cur] ? "Retake level test" : "Level test";
+    const ok = (ready(P.cur) || P.passed[P.cur]) && testAllowed("L"+P.cur);
+    bt.disabled = !ok;
+    note.textContent = !testAllowed("L"+P.cur) ? "สอบไม่ผ่านรอบที่แล้ว ฝึกอีก 1 บทเรียนก่อน แล้วสอบใหม่ได้"
+      : ok ? "พร้อมสอบท้ายด่านแล้ว 16 ข้อ ต้องผ่านทุกทักษะ (ฟัง อ่าน สะกด พูด)"
+      : "ฝึกจนแถบเต็ม แล้วสอบท้ายด่าน ต้องผ่านทุกทักษะ (ฟัง อ่าน สะกด พูด) จึงไปด่านต่อไปได้";
+  }
+  $("btnLesson").textContent = "Start lesson";
+  if(P.quiet !== "off"){ bt.disabled = true; note.textContent = "โหมดนอกบ้าน: ฝึกได้ แต่การสอบต้องฟังและพูดออกเสียง ไว้สอบตอนกลับถึงบ้าน (เลือก Home ด้านบน)"; }
+  const path = $("hPath"); path.innerHTML = "";
+  C.stages.forEach(st => {
+    const row = el("div",{class:"plevels"});
+    st.levels.forEach(id => {
+      const locked = id > P.unlocked, cls = "pl"+(locked?" locked":P.passed[id]?" passed":"")+(id===P.cur?" cur":"");
+      const b = el("button",{class:cls, text:(P.passed[id]?"✓ ":"")+"L"+id, "aria-label":"Level "+id+(locked?" locked":""), title:LV[id].title});
+      if(locked) b.disabled = true; else b.addEventListener("click", () => { P.cur = id; save(); renderHome(); });
+      row.appendChild(b);
+    });
+    const ex = el("button",{class:"pl exam"+(P.exams[st.id]?" passed":examUnlocked(st.id)?"":" locked"), text:(P.exams[st.id]?"✓ ":"")+"Exam", disabled: examUnlocked(st.id) ? null : "disabled", "aria-label":"Stage "+st.id+" exam"});
+    ex.addEventListener("click", () => { P.cur = st.levels[st.levels.length-1]; save(); renderHome(); });
+    row.appendChild(ex);
+    path.appendChild(el("div",{class:"pstage"},[el("h3",{text:"Stage "+st.id+" · "+st.name}), row]));
+  });
+}
+function testAllowed(key){ return !(P.lock[key] && P.lessons < P.lock[key]); }
+
+/* ================= runs: lesson, quick check, level test, stage exam ================= */
+let run = null;
+function startLesson(){
+  const id = P.cur, items = [];
+  /* every 3rd lesson from level 2: a 4-question quick check on earlier levels, one per skill, no help */
+  const quick = [];
+  if(P.lessons > 0 && P.lessons % 3 === 0 && id > 1){
+    const earlier = []; for(let k=1;k<id;k++) levelItems(k).forEach(it => { if(P.intro[it]) earlier.push(it); });
+    SKILLS.forEach(s => { const c = earlier.filter(it => KIND_SKILLS[kindOf(it)].indexOf(s)>=0 && skillAllowed(kindOf(it), s)).sort((a,b) => mget(a,s)-mget(b,s)); if(c.length) quick.push({it: c[Math.floor(Math.random()*Math.min(3,c.length))], s, quick:true}); });
+  }
+  const intro = introduceFor(id);
+  intro.forEach(it => items.push({intro:it}));
+  run = {mode:"lesson", level:id, queue: quick.concat(items), practice: 10, done: 0, results: [], quickResults: [], introduced: intro.slice()};
+  run.total = run.queue.length + run.practice;
+  show("vTask"); next();
+}
+function startTest(){
+  if(P.quiet !== "off") return;
+  const s = stageOf(P.cur);
+  if(isLastOfStage(P.cur) && P.passed[P.cur] && !P.exams[s.id]) return startExam(s.id);
+  run = {mode:"test", key:"L"+P.cur, name:"Level "+P.cur+" test", level:P.cur, queue: buildTest(levelItems(P.cur), 4), results: []};
+  run.total = run.queue.length; show("vTask"); next();
+}
+function startExam(sid){
+  const its = []; STG[sid].levels.forEach(id => levelItems(id).forEach(it => its.push(it)));
+  run = {mode:"exam", key:"S"+sid, name:"Stage "+sid+" exam", stage:sid, level:P.cur, queue: buildTest(its, 6), results: []};
+  run.total = run.queue.length; show("vTask"); next();
+}
+function buildTest(items, per){
+  const q = [];
+  SKILLS.forEach(s => {
+    const c = items.filter(it => KIND_SKILLS[kindOf(it)].indexOf(s)>=0);
+    const byKind = {}; c.forEach(it => (byKind[kindOf(it)] = byKind[kindOf(it)] || []).push(it));
+    const want = s==="speak" ? ["w","w","c","w","c","w"] : s==="spell" ? ["g","w","w","w","g","w"] : s==="read" ? ["g","w","c","t","w","w"] : ["g","w","t","c","w","g"];
+    const chosen = [];
+    for(let i=0; chosen.length<per && i<want.length*3; i++){
+      const k = want[i % want.length], pool = (byKind[k]||[]).filter(it => chosen.indexOf(it)<0);
+      if(pool.length) chosen.push(pool[Math.floor(Math.random()*pool.length)]);
+    }
+    const rest = shuffle(c.filter(it => chosen.indexOf(it)<0));
+    while(chosen.length < per && rest.length) chosen.push(rest.pop());
+    chosen.forEach(it => q.push({it, s}));
+  });
+  return shuffle(q);
+}
+function setHead(){
+  const n = run.mode==="lesson" ? run.total : run.queue.length + run.results.length;
+  const i = run.mode==="lesson" ? run.total - run.queue.length - (run.practice - run.done) : run.results.length;
+  $("tMeter").style.width = Math.round(i/Math.max(1,run.total)*100)+"%";
+  $("tCount").textContent = Math.min(i+1, run.total)+"/"+run.total;
+}
+function next(){
+  $("btnNext").hidden = true; $("tFb").innerHTML = ""; setHead();
+  let t = run.queue.shift();
+  if(!t && run.mode === "lesson" && run.done < run.practice){
+    run.done++;
+    if(run.done === 6 && !run.mid && support() === 0){ run.mid = true; const more = introduceFor(run.level).filter(it => kindOf(it)!=="g" && run.introduced.indexOf(it)<0).slice(0,1); if(more.length){ run.introduced.push(more[0]); run.total++; run.done--; t = {intro: more[0]}; } }
+    if(!t) t = pickPractice(run.level);
+  }
+  if(!t) return finish();
+  run.task = t;
+  if(t.intro){ P.intro[t.intro] = true; save(); return showIntro(t.intro); }
+  RENDER[kindOf(t.it)][t.s](t.it);
+}
+
+/* ---------- intro cards ---------- */
+function showIntro(it){
+  const k = kindOf(it), id = idOf(it), c = $("tCard"); c.innerHTML = "";
+  const top = (en, th) => c.appendChild(el("div",{class:"row",style:"justify-content:space-between;align-items:center"},[el("span",{class:"chip new",text:en}), el("span",{class:"note th",text:th})]));
+  if(k === "g"){
+    const G = GR[id];
+    top("NEW SOUND","เสียงใหม่ ฟังแล้วพูดตาม");
+    c.appendChild(el("div",{class:"row",style:"justify-content:center;align-items:center;gap:22px"},[el("div",{class:"big",text:showG(id)}), el("div",{class:"bigpic pic",text:G.pic})]));
+    c.appendChild(el("p",{style:"margin:0;text-align:center;font-size:22px;font-weight:700",html:showG(id)+" as in <u>"+G.key+"</u>"}));
+    c.appendChild(el("div",{class:"hint th",text:"เสียงคล้าย \""+G.th+"\" · "+G.how+" ("+POS_TH[G.pos]+" "+G.key+")"}));
+    c.appendChild(el("div",{class:"row",style:"justify-content:center"},[el("button",{class:"play","aria-label":"Hear the sound",html:ICON_PLAY,onclick:() => playSound(id)}), el("button",{class:"btn",text:"Hear "+G.key,onclick:() => say(G.key)})]));
+    playSound(id); setTimeout(() => { const n = soundNote(id); if(n) c.appendChild(n); }, 600);
+  } else if(k === "w"){
+    top("NEW WORD","ผสมเสียง แล้วอ่านเป็นคำ");
+    c.appendChild(blendView(id, run.level, true));
+    const mean = el("p",{class:"th",style:"margin:0;text-align:center;font-size:22px",hidden:"hidden",text:(meanPic(id)?meanPic(id)+" ":"")+meanTh(id)});
+    c.appendChild(el("div",{class:"row",style:"justify-content:center"},[
+      el("button",{class:"btn btn-grape",text:"Blend it!",onclick:() => { say(id, 0.55); setTimeout(() => say(id), 1300); mean.hidden = false; }}),
+      el("button",{class:"play small","aria-label":"Hear the word",html:ICON_PLAY,onclick:() => say(id)})]));
+    c.appendChild(mean);
+    c.appendChild(el("p",{class:"note th",style:"text-align:center",text:"แตะทีละเสียงจากซ้ายไปขวา แล้วกด Blend it! เพื่อผสมเป็นคำ"}));
+  } else if(k === "t"){
+    top("TRICKY WORD","คำที่ต้องจำ อ่านตามเสียงไม่ได้ทั้งหมด");
+    c.appendChild(el("div",{class:"big",text:id}));
+    c.appendChild(el("div",{class:"row",style:"justify-content:center"},[el("button",{class:"play","aria-label":"Hear the word",html:ICON_PLAY,onclick:() => say(id)})]));
+    c.appendChild(el("p",{class:"note th",style:"text-align:center",text:"จำรูปคำนี้ไว้ เพราะมีส่วนที่ไม่ออกเสียงตามตัวอักษร"}));
+    say(id);
+  } else {
+    const cp = CAP[id];
+    top("NEW SENTENCE","อ่านประโยคทีละคำ");
+    c.appendChild(el("div",{class:"bigpic pic",text:cp.pic}));
+    c.appendChild(el("p",{class:"cap",text:cp.t}));
+    c.appendChild(el("div",{class:"row",style:"justify-content:center"},[el("button",{class:"play","aria-label":"Hear the sentence",html:ICON_PLAY,onclick:() => say(cp.t)}), el("button",{class:"play small","aria-label":"Hear slowly",html:ICON_SLOW,onclick:() => say(cp.t,0.55)})]));
+  }
+  const nb = $("btnNext"); nb.hidden = false; nb.textContent = "Got it"; nb.onclick = next;
+}
+function blendView(word, lv, withHints){
+  const box = el("div",{class:"chunks"});
+  chunks(word, lv).forEach(ch => {
+    const G = GR[ch.g];
+    const b = el("button",{class:"chunk"+(ch.v?" v":"")+(ch.silent?" silent":""),"aria-label":ch.silent?"silent e":"sound "+ch.t},[el("b",{text:ch.t}), el("span",{class:"th",text: withHints && G && !ch.silent ? G.th : (ch.silent ? "เงียบ" : "")})]);
+    b.addEventListener("click", () => { Array.prototype.forEach.call(box.children, x => x.classList.remove("on")); b.classList.add("on"); if(G && !ch.silent && phonemeOK[ch.g] !== false) { const a = new Audio("audio/phonemes/"+ch.g+".mp3"); a.onerror = () => phonemeOK[ch.g] = false; a.play().then(() => phonemeOK[ch.g] = true).catch(() => phonemeOK[ch.g] = false); } });
+    box.appendChild(b);
+  });
+  return box;
+}
+
+/* ---------- task building blocks ---------- */
+function header(skill, en, th){
+  const c = $("tCard"); c.innerHTML = "";
+  const t = run.task, tag = run.mode !== "lesson" ? el("span",{class:"chip test",text:"TEST · no help"}) : t.quick ? el("span",{class:"chip test",text:"QUICK CHECK"}) : P.quiet === "silent" ? el("span",{class:"chip",text:"🔇 NO SOUND"}) : P.quiet === "earphones" ? el("span",{class:"chip",text:"🎧 EARPHONES"}) : null;
+  c.appendChild(el("div",{class:"row",style:"justify-content:space-between;align-items:center"},[el("span",{class:"chip "+skill,text:skill.toUpperCase()+" · "+SK_TH[skill]}), tag]));
+  c.appendChild(el("p",{class:"prompt",text:en}));
+  if(th) c.appendChild(el("p",{class:"note th",style:"margin-top:-8px",text:th}));
+  return c;
+}
+const testLike = () => !!run && (run.mode !== "lesson" || !!run.task.quick);
+function done(ok, en, th, weight){
+  const t = run.task;
+  run.results.push({it:t.it, s:t.s, ok, quick: !!t.quick});
+  learn(t.it, t.s, ok, weight);
+  if(run.mode === "lesson" && !t.quick){ P.recent.push(ok); if(P.recent.length > 30) P.recent.shift(); }
+  P.tasks++; save();
+  const fb = el("div",{class:"fb "+(ok?"ok":"no")},[el("b",{text: ok ? "Great!" : "Not yet"}), en ? el("span",{text:en}) : null, th ? el("span",{class:"th",text:th}) : null]);
+  $("tFb").innerHTML = ""; $("tFb").appendChild(fb);
+  const nb = $("btnNext"); nb.hidden = false; nb.textContent = "Next"; nb.onclick = next; nb.focus();
+}
+function playRow(fn, slowFn){
+  const max = testLike() ? 2 : 99; let n = 0;
+  const big = el("button",{class:"play","aria-label":"Play",html:ICON_PLAY});
+  big.addEventListener("click", () => { if(n < max){ n++; fn(); } if(n >= max) big.disabled = true; });
+  const kids = [big];
+  if(slowFn && !testLike()) kids.push(el("button",{class:"play small","aria-label":"Play slowly",html:ICON_SLOW,style:"align-self:center",onclick:slowFn}));
+  setTimeout(() => { if(!run || !big.isConnected) return; if(support()===2 && slowFn && !testLike()) slowFn(); else big.click(); }, 250);
+  return el("div",{class:"row",style:"justify-content:center"},kids);
+}
+function choice(options, correct, render, after){
+  const g = el("div",{class:"opts"+(options.length===4?" four":"")}); let answered = false;
+  options.forEach(o => {
+    const b = el("button",{class:"opt"}, render(o));
+    b.addEventListener("click", () => {
+      if(answered) return; answered = true;
+      Array.prototype.forEach.call(g.children, (x,i) => { x.disabled = true; if(options[i]===correct) x.classList.add("right"); });
+      if(o !== correct) b.classList.add("wrong");
+      after(o === correct, o);
+    });
+    g.appendChild(b);
+  });
+  return g;
+}
+function taughtGraphemes(){ return graphemesUpTo(Math.max(run.level, P.cur)); }
+function otherG(g, n){
+  const all = taughtGraphemes().filter(x => x !== g && GR[x].th !== GR[g].th);
+  const same = all.filter(x => x.length === g.length || (x.length>1) === (g.length>1));
+  return sample(same.length >= n ? same : all, n);
+}
+function wordPool(){ const out = []; C.levels.forEach(l => { if(l.id <= Math.max(run.level,P.cur)) l.wordList.concat(l.trickyList).forEach(w => { if(out.indexOf(w)<0) out.push(w); }); }); return out; }
+function otherWords(w, n){
+  const pool = wordPool().filter(x => x !== w && x.toLowerCase() !== w.toLowerCase());
+  const score = x => (x.length===w.length?2:0) + (x[0]===w[0]?1:0) + (x.slice(-1)===w.slice(-1)?1:0) + Math.random()*1.5;
+  return pool.sort((a,b) => score(b)-score(a)).slice(0, n);
+}
+
+/* ---------- renderers by item kind and skill ---------- */
+const RENDER = {g:{}, w:{}, t:{}, c:{}};
+RENDER.g.listen = it => {
+  const g = idOf(it), c = header("listen","Listen. Which letters make this sound?","ฟังเสียงแล้วเลือกตัวอักษร");
+  c.appendChild(playRow(() => playSound(g)));
+  const n = soundNote(g); if(n && !testLike()) c.appendChild(n);
+  const opts = shuffle([g].concat(otherG(g, nOpts()-1)));
+  c.appendChild(choice(opts, g, o => [el("span",{text:showG(o)})], ok => done(ok, showG(g)+" as in "+GR[g].key+" "+GR[g].pic, ok ? null : "เสียงนี้คล้าย \""+GR[g].th+"\" · "+GR[g].how)));
+};
+RENDER.g.read = it => {
+  const g = idOf(it), c = header("read","Which picture has this sound?","ดูตัวอักษร แล้วเลือกรูปที่มีเสียงนี้");
+  c.appendChild(el("div",{class:"big",text:showG(g)}));
+  if(hintsOn()) c.appendChild(el("p",{class:"note th",style:"text-align:center",text:"ดูที่"+POS_TH[GR[g].pos]}));
+  const opts = shuffle([g].concat(otherG(g, nOpts()-1)));
+  c.appendChild(choice(opts, g, o => [el("span",{class:"pic",text:GR[o].pic})], (ok, o) => { say(GR[g].key); done(ok, GR[g].pic+" "+GR[g].key+" has "+showG(g), ok ? null : "รูปที่เลือกคือ "+GR[o].key+" ("+showG(o)+")"); }));
+};
+RENDER.g.spell = it => {
+  const g = idOf(it), silent = P.quiet === "silent";
+  const c = silent ? header("spell","Which letters make the "+({s:"first",m:"middle",e:"last"})[GR[g].pos]+" sound of this picture?","ดูรูป นึกคำภาษาอังกฤษ แล้วแตะตัวอักษรของ"+POS_TH[GR[g].pos]) : header("spell","Listen. Tap the letters for this sound.","ฟังเสียง แล้วแตะตัวอักษรที่เขียนเสียงนี้");
+  if(silent){ c.appendChild(el("div",{class:"bigpic pic",text:GR[g].pic})); }
+  else { c.appendChild(playRow(() => playSound(g))); const n = soundNote(g); if(n && !testLike()) c.appendChild(n); }
+  const keys = shuffle([g].concat(sample(taughtGraphemes().filter(x => x !== g), 7)));
+  const tiles = el("div",{class:"tiles"}); let answered = false;
+  keys.forEach(k => tiles.appendChild(el("button",{class:"tile",text:showG(k),"aria-label":"letters "+showG(k),onclick:e => {
+    if(answered) return; answered = true; Array.prototype.forEach.call(tiles.children, x => x.disabled = true);
+    e.currentTarget.style.background = k===g ? "var(--grass-soft)" : "var(--bad-soft)"; e.currentTarget.disabled = false;
+    done(k===g, "The sound in "+GR[g].key+" is written "+showG(g)+".", k===g ? null : "เสียงคล้าย \""+GR[g].th+"\" เขียนว่า "+showG(g));
+  }})));
+  c.appendChild(tiles);
+};
+RENDER.g.speak = it => {
+  const g = idOf(it), G = GR[g], c = header("speak","Say the sound.","ดูตัวอักษรแล้วออกเสียง จากนั้นฟังตัวอย่างเทียบ");
+  c.appendChild(el("div",{class:"row",style:"justify-content:center;align-items:center;gap:20px"},[el("div",{class:"big",text:showG(g)}), el("div",{class:"bigpic pic",text:G.pic})]));
+  if(hintsOn()) c.appendChild(el("div",{class:"hint th",text:G.how}));
+  selfCheck(c, () => playSound(g), "1. Say the sound.  2. Hear Pip.  3. Same?", 0.6);
+};
+RENDER.w.listen = RENDER.t.listen = it => {
+  const w = idOf(it), c = header("listen","Listen. Which word did you hear?","ฟังแล้วเลือกคำที่ได้ยิน");
+  c.appendChild(playRow(() => say(w), () => say(w, 0.5)));
+  const opts = shuffle([w].concat(otherWords(w, nOpts()-1)));
+  c.appendChild(choice(opts, w, o => [el("span",{text:o})], ok => done(ok, w + (meanTh(w) ? " = "+meanTh(w) : ""), ok ? null : "ฟังเสียงกลางคำและเสียงท้ายอีกครั้ง")));
+};
+RENDER.w.read = it => {
+  const w = idOf(it), l = LV[itemLevel(it)];
+  const canAlien = l.alienList.length && (testLike() || Math.random() < 0.3);
+  const v = canAlien ? "alien" : P.quiet === "silent" ? "blend" : testLike() ? "which" : (Math.random() < 0.6 ? "blend" : "which");
+  if(v === "alien"){
+    const real = Math.random() < 0.5, word = real ? w : l.alienList[Math.floor(Math.random()*l.alienList.length)];
+    const c = header("read","Read it. Real word or alien word?","ถอดเสียงอ่านเอง แล้วตัดสินว่าเป็นคำจริงหรือคำต่างดาว");
+    c.appendChild(el("div",{class:"big",text:word}));
+    const opts = ["Real word","Alien word"], ans = real ? opts[0] : opts[1];
+    c.appendChild(choice(opts, ans, o => [el("span",{class:"pic",text:o==="Real word"?"✅":"👽"}), el("span",{style:"font-size:20px",text:o})], ok => { if(real) say(word); done(ok, real ? word+" is a real word"+(meanTh(word)?" ("+meanTh(word)+")":"")+"." : word+" is not a real word, but you can still read it: "+chunks(word,l.id).map(x=>x.t).join("-"), ok ? null : "คำต่างดาวอ่านตามเสียงได้ แต่ไม่มีความหมาย"); }));
+  } else if(v === "blend"){
+    const c = header("read","Blend the sounds. What does it mean?","แตะทีละเสียง ผสมในใจ แล้วเลือกความหมาย");
+    c.appendChild(blendView(w, Math.max(itemLevel(it), P.cur), hintsOn()));
+    const opts = shuffle([w].concat(otherWords(w, 6).filter(x => C.meaning[x]).slice(0, nOpts()-1)));
+    c.appendChild(choice(opts, w, o => [meanPic(o) ? el("span",{class:"pic",text:meanPic(o)}) : null, el("span",{class:"th",text:meanTh(o)})], ok => { say(w); done(ok, "It says \""+w+"\".", ok ? null : "ลองแยกเสียง: "+chunks(w,P.cur).filter(x=>!x.silent).map(x => x.t).join(" - ")); }));
+  } else {
+    const c = header("read","Read the word. Which one says it?","อ่านคำเอง แล้วกดฟังทีละปุ่ม เลือกปุ่มที่ออกเสียงตรงกับคำ");
+    c.appendChild(el("div",{class:"big",text:w}));
+    const opts = shuffle([w].concat(otherWords(w, 2))), names = ["1","2","3"];
+    const g = el("div",{class:"opts"}); let picked = null, answered = false;
+    const go = el("button",{class:"btn btn-grape",text:"This one",disabled:"disabled"});
+    opts.forEach((o,i) => { const b = el("button",{class:"opt","aria-label":"Sound "+names[i]},[el("span",{class:"pic",text:"🔊"}), el("span",{text:names[i]})]);
+      b.addEventListener("click", () => { if(answered) return; say(o); picked = i; Array.prototype.forEach.call(g.children, x => x.classList.remove("sel")); b.classList.add("sel"); go.disabled = false; }); g.appendChild(b); });
+    go.addEventListener("click", () => { if(picked===null || answered) return; answered = true; go.disabled = true;
+      Array.prototype.forEach.call(g.children, (x,i) => { x.disabled = true; x.classList.remove("sel"); if(opts[i]===w) x.classList.add("right"); else if(i===picked) x.classList.add("wrong"); });
+      done(opts[picked]===w, "Sound "+names[opts.indexOf(w)]+" says \""+w+"\".", opts[picked]===w ? null : "เสียงที่เลือกคือ \""+opts[picked]+"\""); });
+    c.appendChild(g); c.appendChild(go);
+  }
+};
+RENDER.t.read = it => {
+  const w = idOf(it), c = header("read","Read the word. Which one says it?","คำที่ต้องจำ อ่านแล้วเลือกปุ่มที่ออกเสียงตรงกัน");
+  c.appendChild(el("div",{class:"big",text:w}));
+  const opts = shuffle([w].concat(otherWords(w, 2)));
+  const g = el("div",{class:"opts"}); let picked = null, answered = false;
+  const go = el("button",{class:"btn btn-grape",text:"This one",disabled:"disabled"});
+  opts.forEach((o,i) => { const b = el("button",{class:"opt","aria-label":"Sound "+(i+1)},[el("span",{class:"pic",text:"🔊"}), el("span",{text:String(i+1)})]);
+    b.addEventListener("click", () => { if(answered) return; say(o); picked = i; Array.prototype.forEach.call(g.children, x => x.classList.remove("sel")); b.classList.add("sel"); go.disabled = false; }); g.appendChild(b); });
+  go.addEventListener("click", () => { if(picked===null || answered) return; answered = true; go.disabled = true;
+    Array.prototype.forEach.call(g.children, (x,i) => { x.disabled = true; x.classList.remove("sel"); if(opts[i]===w) x.classList.add("right"); else if(i===picked) x.classList.add("wrong"); });
+    done(opts[picked]===w, "Sound "+(opts.indexOf(w)+1)+" says \""+w+"\".", null); });
+  c.appendChild(g); c.appendChild(go);
+};
+RENDER.w.spell = it => {
+  const w = idOf(it), family = !testLike() && w.length === 3 && LV[itemLevel(it)].stage === 1 && support() >= 1 && Math.random() < 0.4;
+  const q = P.quiet === "silent";
+  const c = header("spell", family ? (q ? "Which letter starts the word?" : "Listen. Which letter starts the word?") : (q ? "Spell the word." : "Listen and spell the word."), family ? "เลือกพยัญชนะต้น ผสมกับเสียงที่เหลือให้เป็นคำ" : "แตะตัวอักษรเรียงให้ถูก");
+  if(P.quiet === "silent"){ if(meanPic(w)) c.appendChild(el("div",{class:"bigpic pic",text:meanPic(w)})); c.appendChild(el("p",{class:"th",style:"margin:0;text-align:center;font-size:22px",text:"สะกดคำว่า: "+meanTh(w)})); }
+  else c.appendChild(playRow(() => say(w), () => say(w, 0.5)));
+  if(P.quiet !== "silent" && !testLike() && meanTh(w)) c.appendChild(el("p",{class:"th",style:"margin:0;text-align:center;font-size:18px",text:"ความหมาย: "+(meanPic(w)?meanPic(w)+" ":"")+meanTh(w)}));
+  if(family){
+    const rime = w.slice(1), onset = w[0];
+    c.appendChild(el("div",{class:"slots"},[el("div",{class:"slot",text:"?"}), el("div",{class:"slot fixed",text:rime[0]}), el("div",{class:"slot fixed",text:rime[1]})]));
+    const others = sample(taughtGraphemes().filter(x => x.length===1 && VOWELS.indexOf(x)<0 && x!==onset), 3);
+    c.appendChild(choice(shuffle([onset].concat(others)), onset, o => [el("span",{text:o+" + "+rime})], ok => { say(w); done(ok, onset+" + "+rime+" = "+w, ok ? null : "เสียงต้นของ "+w+" คือ "+onset); }));
+    return;
+  }
+  const letters = w.split(""), extra = sample(taughtGraphemes().filter(x => x.length===1 && letters.indexOf(x)<0), 2);
+  const bank = shuffle(letters.concat(extra)), picked = [];
+  const slots = el("div",{class:"slots"}), tiles = el("div",{class:"tiles"}); let checked = false;
+  function draw(){
+    slots.innerHTML = "";
+    letters.forEach((_,k) => { const p = picked[k]; slots.appendChild(el("button",{class:"slot"+(p!=null?" filled":""),"aria-label":p!=null?"Remove "+bank[p]:"Empty",text:p!=null?bank[p]:"",onclick:() => { if(p!=null && !checked){ picked.splice(k,1); draw(); } }})); });
+    tiles.innerHTML = "";
+    bank.forEach((ch,i) => { const b = el("button",{class:"tile",text:ch,"aria-label":"Letter "+ch,onclick:() => { if(!checked && picked.length < letters.length){ picked.push(i); draw(); } }}); if(picked.indexOf(i)>=0 || checked) b.disabled = true; tiles.appendChild(b); });
+  }
+  const go = el("button",{class:"btn btn-grape",text:"Check",onclick:() => {
+    if(picked.length < letters.length || checked) return; checked = true;
+    const ans = picked.map(p => bank[p]).join(""), ok = ans === w;
+    draw(); Array.prototype.forEach.call(slots.children, (s,k) => s.classList.add(s.textContent===letters[k] ? "right" : "wrong"));
+    go.disabled = true; say(w);
+    done(ok, ok ? w+" = "+chunks(w,P.cur).filter(x=>!x.silent).map(x => x.t).join(" · ") : "Correct spelling: "+w, ok ? null : "ช่องสีแดงคือเสียงที่ยังสะกดผิด");
+  }});
+  c.appendChild(slots); c.appendChild(tiles); c.appendChild(go); draw();
+};
+RENDER.w.speak = it => {
+  const w = idOf(it), c = header("speak","Read it out loud.","กดไมค์แล้วอ่านคำนี้ออกเสียง");
+  c.appendChild(el("div",{class:"big",text:w}));
+  if(hintsOn()) c.appendChild(blendView(w, Math.max(itemLevel(it),P.cur), true));
+  if(hintsOn() && /[ptkbdgfs]$|ck$|ss$/.test(w)) c.appendChild(el("p",{class:"note th",style:"text-align:center",text:"อย่าลืมเสียงท้าย \""+w.slice(-1)+"\" ให้ได้ยินชัด"}));
+  speakCheck(c, [w], () => say(w));
+};
+RENDER.c.listen = it => {
+  const cp = CAP[idOf(it)], c = header("listen","Listen. Which sentence did you hear?","ฟังประโยค แล้วเลือกประโยคที่ได้ยิน");
+  c.appendChild(playRow(() => say(cp.t), () => say(cp.t, 0.55)));
+  const pool = []; C.levels.forEach(l => { if(l.id <= Math.max(run.level,P.cur)) l.caps.forEach(x => { if(x.id !== cp.id) pool.push(x.t); }); });
+  const opts = shuffle([cp.t].concat(sample(pool, 2)));
+  c.appendChild(choice(opts, cp.t, o => [el("span",{style:"font-size:20px",text:o})], ok => done(ok, cp.t, ok ? null : "ฟังคำแรกและคำสุดท้ายของประโยค")));
+};
+RENDER.c.read = it => {
+  const cp = CAP[idOf(it)], c = header("read","Read the sentence. Which picture matches?","อ่านประโยคเอง แล้วเลือกรูปที่ตรงกัน");
+  c.appendChild(el("p",{class:"cap",text:cp.t}));
+  const pool = []; C.levels.forEach(l => { if(l.id <= Math.max(run.level,P.cur)) l.caps.forEach(x => { if(x.id !== cp.id && x.pic !== cp.pic) pool.push(x.pic); }); });
+  const opts = shuffle([cp.pic].concat(sample(pool, 2)));
+  c.appendChild(choice(opts, cp.pic, o => [el("span",{class:"pic",text:o})], ok => { say(cp.t); done(ok, cp.t, ok ? null : "อ่านทีละคำ แล้วนึกภาพตาม"); }));
+};
+RENDER.c.speak = it => {
+  const cp = CAP[idOf(it)], c = header("speak","Read the sentence out loud.","กดไมค์แล้วอ่านทั้งประโยค");
+  c.appendChild(el("div",{class:"bigpic pic",text:cp.pic}));
+  c.appendChild(el("p",{class:"cap",text:cp.t}));
+  speakCheck(c, cp.t.toLowerCase().replace(/[^a-z ]/g,"").split(" ").filter(Boolean), () => say(cp.t));
+};
+
+function speakCheck(c, target, model){
+  const box = el("div",{class:"center"}); c.appendChild(box);
+  if(!SR || micBlocked) return selfCheck(box, model, "1. Say it out loud.  2. Hear Pip.  3. Same?", 0.6, true);
+  const mic = el("button",{class:"mic","aria-label":"Start speaking",html:ICON_MIC});
+  const status = el("p",{class:"note",text:"Tap the mic, then read it."});
+  box.appendChild(mic); box.appendChild(status);
+  let busy = false;
+  mic.addEventListener("click", () => {
+    if(busy) return; busy = true; mic.classList.add("on"); status.textContent = "Listening…";
+    let rec; try { rec = new SR(); } catch(e){ micBlocked = true; box.innerHTML = ""; return selfCheck(box, model, "1. Say it out loud.  2. Hear Pip.  3. Same?", 0.6, true); }
+    rec.lang = P.accent; rec.maxAlternatives = 5; rec.interimResults = false;
+    let got = false;
+    rec.onresult = ev => {
+      got = true; const alts = []; for(let k=0;k<ev.results[0].length;k++) alts.push(ev.results[0][k].transcript.toLowerCase().trim());
+      const content = target.filter(x => ["a","the","is","an"].indexOf(x)<0);
+      const need = content.length ? content : target;
+      const score = Math.max.apply(null, alts.map(a => { const heard = a.split(/[^a-z']+/); return need.filter(x => heard.indexOf(x)>=0).length / need.length; }));
+      const ok = score >= (need.length > 1 ? 0.7 : 1);
+      mic.disabled = true; model();
+      done(ok, ok ? "Clear! We heard \""+alts[0]+"\"." : "We heard \""+(alts[0]||"…")+"\". Listen to Pip.", ok ? null : "ฟังตัวอย่าง แล้วสังเกตเสียงต้นและเสียงท้าย");
+    };
+    rec.onerror = ev => { mic.classList.remove("on"); busy = false;
+      if(["not-allowed","service-not-allowed","audio-capture"].indexOf(ev.error)>=0){ micBlocked = true; box.innerHTML = ""; selfCheck(box, model, "1. Say it out loud.  2. Hear Pip.  3. Same?", 0.6, true); }
+      else status.textContent = "Didn't catch that. Tap the mic and try again."; };
+    rec.onend = () => { mic.classList.remove("on"); busy = false; if(!got && !micBlocked) status.textContent = "Didn't catch that. Tap the mic and try again."; };
+    try { rec.start(); } catch(e){ micBlocked = true; box.innerHTML = ""; selfCheck(box, model, "1. Say it out loud.  2. Hear Pip.  3. Same?", 0.6, true); }
+  });
+}
+function selfCheck(box, model, steps, weight, blocked){
+  if(blocked) box.appendChild(el("p",{class:"note th",style:"text-align:center",text:"ไมโครโฟนใช้ไม่ได้ในหน้านี้ เปิดไฟล์ด้วย Chrome หรือ Edge บนคอมเพื่อให้ระบบฟังเสียง ตอนนี้ใช้โหมดตรวจเอง"}));
+  box.appendChild(el("p",{style:"margin:0;font-weight:700;text-align:center",text:steps}));
+  box.appendChild(el("div",{class:"row",style:"justify-content:center"},[el("button",{class:"play","aria-label":"Hear Pip",html:ICON_PLAY,onclick:model})]));
+  const r = el("div",{class:"row",style:"justify-content:center"}); let answered = false;
+  [["Same as Pip", true],["Not yet", false]].forEach(o => r.appendChild(el("button",{class:"btn"+(o[1]?" btn-sun":""),text:o[0],onclick:() => { if(answered) return; answered = true; Array.prototype.forEach.call(r.children, b => b.disabled = true); done(o[1], null, o[1] ? null : "ฟังตัวอย่างซ้ำ แล้วพูดตามช้า ๆ ทีละเสียง", weight); }})));
+  box.appendChild(r);
+}
+
+/* ---------- results ---------- */
+function bySkill(res){ const b = {}; SKILLS.forEach(s => b[s] = {n:0, ok:0}); res.forEach(r => { b[r.s].n++; if(r.ok) b[r.s].ok++; }); return b; }
+function skillGrid(b, rule){
+  const g = el("div",{class:"sgrid"});
+  SKILLS.forEach(s => { const pass = b[s].n ? b[s].ok/b[s].n >= rule : true;
+    g.appendChild(el("div",{class:"sbox"+(rule ? (pass?" pass":" fail") : "")},[el("b",{text: b[s].n ? b[s].ok+"/"+b[s].n : "–"}), el("small",{text:s+" · "+SK_TH[s]})])); });
+  return g;
+}
+function finish(){
+  const c = $("rCard"); c.innerHTML = "";
+  const res = run.results, main = res.filter(r => !r.quick), quick = res.filter(r => r.quick);
+  const pct = a => a.length ? Math.round(a.filter(r => r.ok).length / a.length * 100) : 0;
+  if(run.mode === "lesson"){
+    P.lessons++;
+    c.appendChild(el("span",{class:"chip read",text:"LESSON DONE"}));
+    c.appendChild(el("h2",{style:"margin:0;font-size:56px;line-height:1",text:pct(main)+"%"}));
+    c.appendChild(el("p",{style:"margin:0;font-size:22px;font-weight:800",text:main.filter(r=>r.ok).length+" of "+main.length+" correct"+(run.introduced.length?" · "+run.introduced.length+" new":"")}));
+    c.appendChild(skillGrid(bySkill(main), 0));
+    if(quick.length){
+      const q = pct(quick);
+      P.history.push({at:Date.now(), name:"Quick check (L1–L"+(run.level-1)+")", skills:bySkill(quick), total:q, pass:q>=75});
+      c.appendChild(el("div",{class:"fb "+(q>=75?"ok":"no"),style:"width:100%;text-align:left"},[el("b",{text:"Quick check: "+q+"%"}), el("span",{class:"th",text: q>=75 ? "ยังจำเรื่องที่เรียนไปแล้วได้ดี" : "บางเรื่องเริ่มลืม ระบบจะนำกลับมาทบทวนในบทถัดไป"})]));
+    }
+    const r = levelReadiness(run.level);
+    c.appendChild(el("p",{class:"th",style:"margin:0",text: ready(run.level) ? "พร้อมสอบท้ายด่านแล้ว" : "ความพร้อมสอบท้ายด่าน "+Math.round(r*100)+"%"}));
+    const s = support(); c.appendChild(el("p",{class:"note th",text: s===0 ? "ทำได้ดีมาก บทต่อไปจะยากขึ้น: ตัวเลือก 4 ข้อ ไม่มีคำใบ้ และคำใหม่มาเร็วขึ้น" : s===2 ? "บทต่อไปจะช่วยมากขึ้น: เสียงช้า คำใบ้ภาษาไทย และทบทวนคำเดิม" : "ระดับความยากเหมาะสมแล้ว"}));
+  } else {
+    const b = bySkill(res), total = pct(res);
+    const pass = total >= 80 && SKILLS.every(s => !b[s].n || b[s].ok/b[s].n >= 0.75);
+    P.history.push({at:Date.now(), name:run.name, skills:b, total, pass});
+    if(pass){
+      delete P.lock[run.key];
+      if(run.mode === "test"){
+        P.passed[run.level] = true;
+        if(!isLastOfStage(run.level) && run.level === P.unlocked){ P.unlocked = run.level + 1; P.cur = P.unlocked; }
+      } else {
+        P.exams[run.stage] = true;
+        const nextStage = STG[run.stage+1];
+        if(nextStage && P.unlocked < nextStage.levels[0]){ P.unlocked = nextStage.levels[0]; P.cur = P.unlocked; }
+      }
+    } else {
+      P.lock[run.key] = P.lessons + 1;
+      res.filter(r => !r.ok).forEach(r => learn(r.it, r.s, false));
+    }
+    c.appendChild(el("span",{class:"chip test",text:run.name.toUpperCase()}));
+    c.appendChild(el("h2",{style:"margin:0;font-size:56px;line-height:1",text:total+"%"}));
+    let msg = pass ? (run.mode==="exam" ? (STG[run.stage+1] ? "Stage passed! Welcome to Stage "+(run.stage+1)+"." : "All 4 stages passed!") : isLastOfStage(run.level) ? "Level passed! The stage exam is open." : "Passed! Level "+(run.level+1)+" is open.") : "Not yet. Let's practise the weak spots.";
+    c.appendChild(el("p",{style:"margin:0;font-size:24px;font-weight:800",text:msg}));
+    c.appendChild(skillGrid(b, 0.75));
+    c.appendChild(el("p",{class:"th",style:"margin:0",text: pass
+      ? (run.mode==="exam" && !STG[run.stage+1] ? "จบหลักสูตรอ่านออกเขียนได้ระดับ Pre-A1 แล้ว ขั้นต่อไปคือระดับ Explorer (A1): คำศัพท์ชีวิตประจำวัน บทสนทนา และไวยากรณ์" : "ผลสอบตรงกับสิ่งที่เรียนมา ไปต่อได้เลย")
+      : "ต้องได้รวม 80% ขึ้นไป และทุกทักษะ 75% ขึ้นไป ข้อที่พลาดจะถูกนำมาฝึกก่อน ฝึกอีก 1 บทเรียนแล้วสอบใหม่ได้"}));
+  }
+  const missed = res.filter(r => !r.ok).map(r => label(r.it)+" ("+r.s+")");
+  if(missed.length) c.appendChild(el("p",{class:"note",text:"Practise next: "+missed.slice(0,8).join(", ")}));
+  save();
+  c.appendChild(el("button",{class:"btn btn-main",style:"width:100%",text:"Back to the path",onclick:() => { run = null; renderHome(); show("vHome"); }}));
+  show("vResult");
+}
+
+
+/* ================= practice zone (free play, separate from the course) ================= */
+const PR = {tool:"blend", blend:{mode:"build", on:"c", v:"a", end:"t", rime:"at"}, spell:{src:"all", type:"tiles", queue:[], cur:null, streak:0, n:0, ok:0, retry:[]}, read:{src:"all", kind:"w", queue:[], cur:null, n:0, ok:0, hints:true}};
+const ONSETS = ["","s","t","p","n","m","d","g","c","k","r","h","b","f","l","z","sh","ch","th","wh","fr","dr","st","sp","bl","tr","gr","sl","cl","str"];
+const PVOWELS = ["a","e","i","o","u","ee","ai","oa","oo","ar","ir","a_e","i_e","o_e"];
+const ENDS = ["","t","p","n","m","d","g","ck","x","ss","ll","ff","sh","ch","th","nd","mp","nk","lk","st"];
+const RIMES = ["at","an","ap","ad","ag","it","in","ip","ig","id","op","ot","og","ug","un","ub","et","en","eg","ed","ack","ick","ock","uck","ill","ell","ish","ash","ee","eep","ail","ain","oat","ar","ake","ike","ine","ose"];
+const isMagic = v => v.indexOf("_e") > 0;
+/* combinations that make rude or offensive words are never shown or spoken in a children's app */
+const BLOCK = new Set(["shat","shit","tit","fag","fuck","dick","cock","shag","slag","hell","nig","spick","spic","cunt","slut","piss","crap","bitch","twat","sex","fanny","bum","pube","nob","knob","kike","coon","gook","wank","prick","tits","clit","dyke","fart"]);
+const blocked = w => BLOCK.has(w);
+function composeWord(on, v, end){ if(isMagic(v)) return on + v[0] + (end || "") + (end ? "e" : ""); return on + v + end; }
+const sourceLevels = src => src === "all" ? C.levels.map(l => l.id) : [Number(src)];
+function practiceWords(src){ const out = []; sourceLevels(src).forEach(id => LV[id].wordList.forEach(w => { if(out.indexOf(w)<0) out.push(w); })); return out; }
+function levelSelect(id, value, onchange){
+  const sel = el("select",{id, "aria-label":"Choose words"});
+  sel.appendChild(el("option",{value:"all", text:"All levels"}));
+  C.levels.forEach(l => sel.appendChild(el("option",{value:String(l.id), text:"Level "+l.id+" · "+l.gs.map(x => showG(x.g)).join(" ")})));
+  sel.value = value; sel.addEventListener("change", e => onchange(e.target.value));
+  return sel;
+}
+function seg(options, value, onpick, label){
+  const g = el("div",{class:"seg", role:"group", "aria-label":label});
+  options.forEach(o => g.appendChild(el("button",{"aria-pressed": String(o[0]===value), text:o[1], onclick:() => onpick(o[0])})));
+  return g;
+}
+function savePractice(){ save(); }
+function renderPractice(){
+  ["Blend","Spell","Read"].forEach(t => $("tool"+t).setAttribute("aria-pressed", String(PR.tool === t.toLowerCase())));
+  const p = $("pracPanel"); p.innerHTML = "";
+  ({blend:practiceBlend, spell:practiceSpell, read:practiceRead})[PR.tool](p);
+}
+
+/* ---- Blend: build a word from start + vowel + end, or see a whole word family (แจกลูก) ---- */
+function practiceBlend(p){
+  const B = PR.blend;
+  p.appendChild(seg([["build","Build a word"],["family","Word family chart"]], B.mode, m => { B.mode = m; renderPractice(); }, "Blend mode"));
+  if(B.mode === "build"){
+    p.appendChild(el("p",{class:"note th",text:"เลือกพยัญชนะต้น + สระ + ตัวสะกด แล้วกด Blend เพื่อผสมเป็นคำ"}));
+    const row = (title, list, key, cls) => {
+      const r = el("div",{class:"pickrow"+(cls?" "+cls:"")});
+      list.forEach(x => r.appendChild(el("button",{"aria-pressed": String(B[key]===x), "aria-label": x ? showG(x) : "none", text: x ? showG(x) : "–", onclick:() => { B[key] = x; renderPractice(); if(x && GR[x]) playSound(x); }})));
+      return el("div",{class:"pick"},[el("span",{text:title}), r]);
+    };
+    p.appendChild(row("START · พยัญชนะต้น", ONSETS, "on"));
+    p.appendChild(row("VOWEL · สระ", PVOWELS, "v", "v"));
+    p.appendChild(row("END · ตัวสะกด", ENDS, "end"));
+    const word = composeWord(B.on, B.v, B.end);
+    const parts = [];
+    if(B.on) parts.push({t:B.on, g:B.on});
+    parts.push({t:isMagic(B.v) ? B.v[0] : B.v, g:B.v, v:true});
+    if(B.end) parts.push({t:B.end, g:B.end});
+    if(isMagic(B.v) && B.end) parts.push({t:"e", g:B.v, silent:true});
+    const box = el("div",{class:"chunks"});
+    parts.forEach((ch,i) => { const G = GR[ch.g];
+      if(i) box.appendChild(el("span",{style:"align-self:center;font-size:26px;font-weight:800",text:"+"}));
+      box.appendChild(el("button",{class:"chunk"+(ch.v?" v":"")+(ch.silent?" silent":""),"aria-label":"sound "+ch.t,onclick:() => { if(G && !ch.silent) playSound(ch.g); }},[el("b",{text:ch.t}), el("span",{class:"th",text: ch.silent ? "เงียบ" : G ? G.th : ""})])); });
+    p.appendChild(box);
+    if(blocked(word)){ p.appendChild(el("p",{class:"th",style:"text-align:center;font-size:20px",text:"ลองเลือกเสียงอื่น"})); return; }
+    const known = C.meaning[word];
+    p.appendChild(el("div",{class:"big",text:"= "+word}));
+    if(isMagic(B.v) && !B.end) p.appendChild(el("p",{class:"note th",style:"text-align:center",text:"สระ "+showG(B.v)+" ต้องมีตัวสะกด 1 ตัวคั่นก่อน e เลือก END ด้วย"}));
+    p.appendChild(el("p",{class:"th",style:"margin:0;text-align:center;font-size:20px",text: known ? "✅ "+(known[1]?known[1]+" ":"")+known[0] : "ฝึกอ่านตามเสียง (คำนี้ไม่มีในคลังคำของแอป อาจไม่ใช่คำจริง)"}));
+    p.appendChild(el("div",{class:"row",style:"justify-content:center"},[
+      el("button",{class:"btn btn-grape",text:"Blend it!",onclick:() => { PR_count("blend"); say(word, 0.5); setTimeout(() => say(word), 1400); }}),
+      el("button",{class:"btn",text:"Random",onclick:() => { const bank = practiceWords("all").filter(w => w.length <= 6); const w = bank[Math.floor(Math.random()*bank.length)]; setFromWord(w); renderPractice(); say(w); }})]));
+    if(P.quiet === "silent") p.appendChild(el("p",{class:"note th",text:"โหมดไม่มีเสียง: อ่านเสียงผสมในใจตามคำใบ้ใต้แต่ละช่อง"}));
+    else if(!anyPhoneme) p.appendChild(el("p",{class:"note th",text:"แตะแต่ละช่องเพื่อฟังเสียงเดี่ยว (ตอนนี้ยังไม่มีไฟล์เสียงครู จึงเล่นคำตัวอย่างแทน)"}));
+  } else {
+    p.appendChild(el("p",{class:"note th",text:"แจกลูก: เลือกเสียงท้าย (สระ + ตัวสะกด) แล้วดูว่าเปลี่ยนพยัญชนะต้นได้คำอะไรบ้าง แตะคำเพื่อฟัง สีเขียว = คำที่มีในคลังคำ"}));
+    const r = el("div",{class:"pickrow v"});
+    RIMES.forEach(x => r.appendChild(el("button",{"aria-pressed": String(B.rime===x), text:"-"+x, onclick:() => { B.rime = x; renderPractice(); }})));
+    p.appendChild(el("div",{class:"pick"},[el("span",{text:"WORD FAMILY · เสียงท้าย"}), r]));
+    const grid = el("div",{class:"fam"});
+    const magic = /^[aio][^aeiou]e$/.test(B.rime);
+    ONSETS.filter(o => o).forEach(o => {
+      const w = o + B.rime;
+      if(/(.)\1\1/.test(w) || blocked(w)) return;
+      const m = C.meaning[w];
+      grid.appendChild(el("button",{class: m ? "known" : "", "aria-label": w, onclick:() => { PR_count("blend"); say(w); }},[
+        el("span",{html:"<span style=\"color:var(--muted)\">"+o+"</span>"+B.rime}), m ? el("small",{text:(m[1]?m[1]+" ":"")+m[0]}) : null]));
+    });
+    p.appendChild(grid);
+    if(magic) p.appendChild(el("p",{class:"note th",text:"กลุ่ม magic e: e ท้ายคำไม่ออกเสียง แต่ทำให้สระหน้าเป็นเสียงยาว"}));
+    p.appendChild(el("p",{class:"note th",text:"คำสีขาวบางคำเป็นคำจริงที่ยังไม่อยู่ในคลังคำ บางคำเป็นคำที่ไม่มีความหมาย ใช้ฝึกผสมเสียงได้ทั้งหมด"}));
+  }
+}
+function setFromWord(w){
+  const B = PR.blend, ch = chunks(w, LAST).filter(x => !x.silent);
+  const vi = ch.findIndex(x => x.v);
+  B.on = ch.slice(0, vi).map(x => x.t).join(""); B.v = ch[vi].g; B.end = ch.slice(vi+1).map(x => x.t).join("");
+  if(ONSETS.indexOf(B.on)<0) ONSETS.push(B.on); if(ENDS.indexOf(B.end)<0) ENDS.push(B.end); if(PVOWELS.indexOf(B.v)<0) PVOWELS.push(B.v);
+}
+function PR_count(k){ P.practice[k].n++; savePractice(); }
+
+/* ---- Spell: hear a word, spell it with letter tiles or the keyboard ---- */
+function nextSpellWord(){
+  const S = PR.spell;
+  if(S.retry.length && S.retry[0].due <= S.n){ return S.retry.shift().w; }
+  if(!S.queue.length) S.queue = shuffle(practiceWords(S.src));
+  let w = S.queue.pop(); if(w === S.cur && S.queue.length) w = S.queue.pop();
+  return w;
+}
+function practiceSpell(p){
+  const S = PR.spell, st = P.practice.spell;
+  p.appendChild(el("div",{class:"row",style:"align-items:center"},[levelSelect("spSrc", S.src, v => { S.src = v; S.queue = []; S.cur = null; renderPractice(); }),
+    seg([["tiles","Tap letters"],["type","Type"]], S.type, t => { S.type = t; renderPractice(); }, "Answer with")]));
+  const statLine = el("div",{class:"statline"}); const drawStats = () => { statLine.innerHTML = ""; [["Streak "+S.streak],["Today "+S.ok+"/"+S.n],["Best streak "+st.best]].forEach(t => statLine.appendChild(el("span",{text:t[0]}))); }; drawStats();
+  p.appendChild(statLine);
+  if(!S.cur) S.cur = nextSpellWord();
+  const w = S.cur;
+  if(P.quiet === "silent"){
+    p.appendChild(el("p",{class:"prompt",text:"Spell the word."}));
+    if(meanPic(w)) p.appendChild(el("div",{class:"bigpic pic",text:meanPic(w)}));
+    p.appendChild(el("p",{class:"th",style:"margin:0;text-align:center;font-size:22px",text:"สะกดคำว่า: "+meanTh(w)}));
+  } else {
+  p.appendChild(el("p",{class:"prompt",text:"Listen and spell."}));
+  p.appendChild(el("div",{class:"row",style:"justify-content:center"},[
+    el("button",{class:"play","aria-label":"Hear the word",html:ICON_PLAY,onclick:() => say(w)}),
+    el("button",{class:"play small","aria-label":"Hear slowly",html:ICON_SLOW,style:"align-self:center",onclick:() => say(w,0.5)})]));
+  }
+  const hintBox = el("p",{class:"th",style:"margin:0;text-align:center;font-size:18px",hidden:"hidden",text:"ความหมาย: "+(meanPic(w)?meanPic(w)+" ":"")+meanTh(w)});
+  p.appendChild(el("div",{class:"row",style:"justify-content:center"},[el("button",{class:"btn",text:"Hint: meaning",onclick:() => hintBox.hidden = false}), el("button",{class:"btn",text:"Hint: sounds ("+chunks(w,LAST).filter(x=>!x.silent).length+")",onclick:e => { e.currentTarget.textContent = chunks(w,LAST).map(x => x.silent ? "(e)" : "_".repeat(x.t.length)).join(" · "); }})]));
+  p.appendChild(hintBox);
+  const fb = el("div",{});
+  const finish = ans => {
+    const ok = ans === w; S.n++; st.n++;
+    if(ok){ S.ok++; st.ok++; S.streak++; st.best = Math.max(st.best, S.streak); } else { S.streak = 0; S.retry.push({w, due:S.n+3}); }
+    savePractice(); say(w); drawStats();
+    fb.innerHTML = "";
+    fb.appendChild(el("div",{class:"fb "+(ok?"ok":"no")},[el("b",{text: ok ? "Great! "+w : "Not yet. It is "+w}),
+      el("span",{text:chunks(w,LAST).map(x => x.silent ? "(e)" : x.t).join(" · ")+(meanTh(w)?"  =  "+meanTh(w):"")}),
+      ok ? null : el("span",{class:"th",text:"คำนี้จะกลับมาให้ลองอีกครั้งในอีก 3 คำ"})]));
+    fb.appendChild(el("button",{class:"btn btn-main",style:"width:100%;margin-top:10px",text:"Next word",onclick:() => { S.cur = nextSpellWord(); renderPractice(); setTimeout(() => say(S.cur), 200); }}));
+  };
+  if(S.type === "type"){
+    const inp = el("input",{class:"typein",id:"spType",autocomplete:"off",autocapitalize:"off",spellcheck:"false","aria-label":"Type the word"});
+    const go = el("button",{class:"btn btn-grape",text:"Check"});
+    let done1 = false;
+    const check = () => { if(done1) return; const a = inp.value.trim().toLowerCase(); if(!a) return; done1 = true; inp.disabled = true; go.disabled = true; finish(a); };
+    go.addEventListener("click", check); inp.addEventListener("keydown", e => { if(e.key === "Enter") check(); });
+    p.appendChild(inp); p.appendChild(go); setTimeout(() => inp.focus(), 50);
+  } else {
+    const letters = w.split(""), extra = sample("abcdefghiklmnoprstuz".split("").filter(x => letters.indexOf(x)<0), 3);
+    const bank = shuffle(letters.concat(extra)), picked = [];
+    const slots = el("div",{class:"slots"}), tiles = el("div",{class:"tiles"}); let checked = false;
+    const draw = () => {
+      slots.innerHTML = ""; letters.forEach((_,k) => { const pi = picked[k]; slots.appendChild(el("button",{class:"slot"+(pi!=null?" filled":""),"aria-label":pi!=null?"Remove "+bank[pi]:"Empty",text:pi!=null?bank[pi]:"",onclick:() => { if(pi!=null && !checked){ picked.splice(k,1); draw(); } }})); });
+      tiles.innerHTML = ""; bank.forEach((ch,i) => { const b = el("button",{class:"tile",text:ch,"aria-label":"Letter "+ch,onclick:() => { if(!checked && picked.length < letters.length){ picked.push(i); draw(); } }}); if(picked.indexOf(i)>=0 || checked) b.disabled = true; tiles.appendChild(b); });
+    };
+    const go = el("button",{class:"btn btn-grape",text:"Check",onclick:() => {
+      if(picked.length < letters.length || checked) return; checked = true; go.disabled = true; draw();
+      Array.prototype.forEach.call(slots.children, (s2,k) => s2.classList.add(s2.textContent===letters[k] ? "right" : "wrong"));
+      finish(picked.map(i => bank[i]).join(""));
+    }});
+    p.appendChild(slots); p.appendChild(tiles); p.appendChild(go); draw();
+  }
+  p.appendChild(fb);
+}
+
+/* ---- Read: words, sentences or tricky words; read first, then check ---- */
+function readItems(src, kind){
+  const out = [];
+  sourceLevels(src).forEach(id => { const l = LV[id];
+    if(kind === "w") l.wordList.forEach(w => out.indexOf(w)<0 && out.push(w));
+    if(kind === "t") l.trickyList.forEach(w => out.indexOf(w)<0 && out.push(w));
+    if(kind === "c") l.caps.forEach(c => out.push(c.id)); });
+  return out;
+}
+function practiceRead(p){
+  const R = PR.read, st = P.practice.read;
+  p.appendChild(el("div",{class:"row",style:"align-items:center"},[levelSelect("rdSrc", R.src, v => { R.src = v; R.queue = []; R.cur = null; renderPractice(); }),
+    seg([["w","Words"],["c","Sentences"],["t","Tricky words"]], R.kind, k => { R.kind = k; R.queue = []; R.cur = null; renderPractice(); }, "What to read")]));
+  let items = readItems(R.src, R.kind);
+  if(!items.length){ p.appendChild(el("p",{class:"th",text: R.kind==="c" ? "ประโยคเริ่มมีตั้งแต่ Level 3–5 เลือก All levels หรือ Level 3 ขึ้นไป" : "ด่านนี้ยังไม่มีคำประเภทนี้ ลองเลือก All levels"})); return; }
+  if(!R.queue.length) R.queue = shuffle(items);
+  if(!R.cur || items.indexOf(R.cur)<0) R.cur = R.queue.pop();
+  const id = R.cur, isCap = R.kind === "c", text = isCap ? CAP[id].t : id;
+  p.appendChild(el("div",{class:"statline"},[el("span",{text:"Read "+R.ok+"/"+R.n+" today"}), el("span",{text:"All time "+st.ok+"/"+st.n})]));
+  p.appendChild(el("p",{class:"prompt",text:"Read it yourself first."}));
+  p.appendChild(el("p",{class:"note th",style:"margin-top:-8px",text: P.quiet === "off" ? "อ่านออกเสียงเองก่อน แล้วค่อยกดฟังเพื่อเช็ก" : P.quiet === "earphones" ? "อ่านในใจหรือพูดเบา ๆ แล้วกดฟังในหูฟังเพื่อเช็ก" : "อ่านในใจ แล้วกด Check ดูความหมายหรือภาพ"}));
+  p.appendChild(el("p",{class: isCap ? "cap" : "big", text}));
+  if(R.kind === "w"){
+    p.appendChild(el("label",{style:"display:flex;gap:8px;align-items:center;justify-content:center;font-weight:700"},[el("input",{type:"checkbox",id:"rdHints",checked: R.hints ? "checked" : null,onchange:e => { R.hints = e.target.checked; renderPractice(); }}), "Show sound hints"]));
+    if(R.hints) p.appendChild(blendView(id, LAST, true));
+  }
+  const reveal = el("div",{class:"stack",hidden:"hidden"});
+  const mean = isCap ? el("div",{class:"bigpic pic",text:CAP[id].pic}) : el("p",{class:"th",style:"margin:0;text-align:center;font-size:20px",text: R.kind==="t" ? "คำที่ต้องจำ" : (meanPic(id)?meanPic(id)+" ":"")+meanTh(id)});
+  reveal.appendChild(mean);
+  const mark = (ok) => { R.n++; st.n++; if(ok){ R.ok++; st.ok++; } savePractice(); R.cur = R.queue.pop() || null; renderPractice(); };
+  reveal.appendChild(el("div",{class:"row",style:"justify-content:center"},[el("button",{class:"btn btn-sun",text:"I read it right",onclick:() => mark(true)}), el("button",{class:"btn",text:"Not yet",onclick:() => mark(false)})]));
+  p.appendChild(el("div",{class:"row",style:"justify-content:center"},[
+    el("button",{class:"btn btn-grape",text: P.quiet === "silent" ? "Check" : "Check: hear it",onclick:() => { say(text); reveal.hidden = false; }}),
+    P.quiet === "silent" ? null : el("button",{class:"play small","aria-label":"Hear slowly",html:ICON_SLOW,onclick:() => { say(text,0.5); reveal.hidden = false; }})]));
+  p.appendChild(reveal);
+}
+
+/* ---------- where am I playing? ---------- */
+const QUIET = [["off","🏠 Home","ที่บ้าน: ฝึกครบทุกทักษะ พูดออกเสียงได้ และสอบได้"],
+               ["earphones","🎧 Out · earphones","นอกบ้านใส่หูฟัง: มีเสียงในหูฟัง ไม่ต้องพูดออกเสียง ข้ามข้อพูด"],
+               ["silent","🔇 Out · no sound","นอกบ้านไม่มีหูฟัง: ไม่มีเสียงเลย ฝึกอ่าน สะกด ผสมสระ จากภาพและความหมาย"]];
+function renderQuiet(){
+  const b = $("quietBar"); b.innerHTML = "";
+  const g = el("div",{class:"qseg", role:"group", "aria-label":"Where are you playing"});
+  QUIET.forEach(q => g.appendChild(el("button",{"aria-pressed": String(P.quiet===q[0]), text:q[1], onclick:() => setQuiet(q[0])})));
+  b.appendChild(g);
+  b.appendChild(el("p",{class:"note th",text:QUIET.find(q => q[0]===P.quiet)[2]}));
+}
+function setQuiet(m){
+  P.quiet = m; save(); if(m === "silent" && synth) synth.cancel();
+  renderQuiet();
+  if(!$("vHome").hidden) renderHome(); if(!$("vPrac").hidden) renderPractice(); if(!$("vProg").hidden) renderProg();
+}
+
+/* ---------- progress ---------- */
+function renderProg(){
+  const seen = Object.keys(P.intro);
+  const sk = $("pSkills"); sk.innerHTML = "";
+  SKILLS.forEach(s => { const v = Math.round(avg(seen.filter(it => KIND_SKILLS[kindOf(it)].indexOf(s)>=0).map(it => mget(it,s)))*100);
+    sk.appendChild(el("div",{class:"skillrow"},[el("span",{text:s[0].toUpperCase()+s.slice(1)}), el("div",{class:"meter"},[el("i",{style:"width:"+v+"%"})]), el("span",{text:v+"%"})])); });
+  const lt = $("pLevels"); lt.innerHTML = "";
+  C.levels.forEach(l => { if(l.id > P.unlocked) return;
+    const its = levelItems(l.id), m = Math.round(avg(its.map(it => avg(KIND_SKILLS[kindOf(it)].map(s => mget(it,s)))))*100);
+    lt.appendChild(el("tr",{},[el("td",{text:"L"+l.id}), el("td",{text:l.gs.map(x=>showG(x.g)).join(" ")}), el("td",{text:its.filter(it=>P.intro[it]).length+"/"+its.length}), el("td",{text:m+"%"}), el("td",{text:P.passed[l.id]?"passed":"–"})])); });
+  const tb = $("pTests"); tb.innerHTML = "";
+  if(!P.history.length) tb.appendChild(el("tr",{},[el("td",{colspan:"7",class:"note",text:"No tests yet."})]));
+  P.history.slice().reverse().slice(0,20).forEach(h => { const d = new Date(h.at), cell = s => h.skills[s].n ? h.skills[s].ok+"/"+h.skills[s].n : "–";
+    tb.appendChild(el("tr",{},[el("td",{text:d.toLocaleDateString()}), el("td",{text:h.name}), el("td",{text:cell("listen")}), el("td",{text:cell("read")}), el("td",{text:cell("spell")}), el("td",{text:cell("speak")}), el("td",{text:h.total+"% "+(h.pass?"✓":"✗")})])); });
+  const weak = []; seen.forEach(it => KIND_SKILLS[kindOf(it)].forEach(s => weak.push({it, s, m:mget(it,s)})));
+  weak.sort((a,b) => a.m-b.m);
+  const wl = $("pWeak"); wl.innerHTML = "";
+  const top = weak.filter(x => x.m < 0.6).slice(0,10);
+  if(!top.length) wl.appendChild(el("span",{style:"background:var(--grass-soft)",text: seen.length ? "Nothing weak right now" : "Start a lesson to see this"}));
+  top.forEach(x => wl.appendChild(el("span",{text:label(x.it)+" · "+x.s})));
+  $("selAccent").value = P.accent;
+  $("pAudio").textContent = anyPhoneme ? "ใช้เสียงหน่วยเสียงที่ครูอัดไว้" : "เสียงหน่วยเสียงเดี่ยว (/s/ /m/) ยังไม่มีไฟล์ครู จึงเล่นคำตัวอย่างแทน ใส่ไฟล์ไว้ในโฟลเดอร์ audio/phonemes/ ข้างไฟล์นี้ เช่น s.mp3, sh.mp3";
+  resetIdle();
+}
+function resetIdle(){ const row = $("resetRow"); row.innerHTML = ""; row.appendChild(el("button",{class:"btn",text:"Start over from zero",onclick:askReset})); }
+function askReset(){
+  const row = $("resetRow"); row.innerHTML = "";
+  row.appendChild(el("span",{class:"th",style:"align-self:center",text:"ลบความคืบหน้าทั้งหมด?"}));
+  row.appendChild(el("button",{class:"btn",style:"background:var(--bad-soft)",text:"Yes, start over",onclick:() => { P = fresh(); save(); renderProg(); renderHome(); }}));
+  row.appendChild(el("button",{class:"btn",text:"Cancel",onclick:resetIdle}));
+}
+
+/* ---------- wiring ---------- */
+$("btnLesson").addEventListener("click", startLesson);
+$("btnTest").addEventListener("click", startTest);
+$("btnQuit").addEventListener("click", () => { if(synth) synth.cancel(); run = null; renderHome(); show("vHome"); });
+$("tabHome").addEventListener("click", () => { renderHome(); show("vHome"); });
+$("tabProg").addEventListener("click", () => { renderProg(); show("vProg"); });
+$("tabPrac").addEventListener("click", () => { renderPractice(); show("vPrac"); });
+["Blend","Spell","Read"].forEach(t => $("tool"+t).addEventListener("click", () => { PR.tool = t.toLowerCase(); renderPractice(); }));
+$("selAccent").addEventListener("change", e => { P.accent = e.target.value; save(); say("Hello! Let's read."); });
+window.__pp = { get P(){ return P; }, set P(v){ P = v; }, get run(){ return run; }, levelItems, chunks, ready, renderHome, save, PR };
+renderHome(); renderQuiet();
+})();
+</script>
+<script>if("serviceWorker" in navigator && (location.protocol==="https:"||location.hostname==="localhost")){navigator.serviceWorker.register("sw.js").catch(function(){});}</script></body></html>
